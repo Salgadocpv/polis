@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Atualizar Service Worker</title>
+</head>
+<body>
+    <h1>Desabilitando Cache...</h1>
+    <div id="status">Limpando cache existente...</div>
+    
+    <script>
+        async function clearAllCacheAndUpdate() {
+            if ('serviceWorker' in navigator) {
+                try {
+                    // Limpar TODOS os caches existentes
+                    const cacheNames = await caches.keys();
+                    document.getElementById('status').innerHTML = `Removendo ${cacheNames.length} caches existentes...`;
+                    
+                    for (const cacheName of cacheNames) {
+                        console.log('Removendo cache:', cacheName);
+                        await caches.delete(cacheName);
+                    }
+                    
+                    // Unregistrar service workers antigos
+                    const registrations = await navigator.serviceWorker.getRegistrations();
+                    for (const registration of registrations) {
+                        await registration.unregister();
+                    }
+                    
+                    document.getElementById('status').innerHTML = 'Caches limpos! Registrando novo Service Worker...';
+                    
+                    // Registrar novo service worker sem cache
+                    const registration = await navigator.serviceWorker.register('service-worker.js', {
+                        updateViaCache: 'none'
+                    });
+                    
+                    // Forçar atualização
+                    await registration.update();
+                    
+                    // Enviar mensagem para limpar qualquer cache restante
+                    if (registration.active) {
+                        registration.active.postMessage({type: 'CLEAR_ALL_CACHE'});
+                    }
+                    
+                    document.getElementById('status').innerHTML = 'Service Worker SEM CACHE ativo! Recarregando em 2 segundos...';
+                    
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                    
+                } catch (error) {
+                    console.error('Erro ao limpar cache:', error);
+                    document.getElementById('status').innerHTML = 'Erro: ' + error.message;
+                }
+            } else {
+                document.getElementById('status').innerHTML = 'Service Worker não suportado';
+            }
+        }
+        
+        clearAllCacheAndUpdate();
+    </script>
+</body>
+</html>

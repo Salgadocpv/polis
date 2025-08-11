@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Project Load</title>
+</head>
+<body>
+    <h1>Testando carregamento de projeto...</h1>
+    <div id="result"></div>
+    
+    <script>
+    async function testProjectLoad() {
+        try {
+            console.log('Iniciando teste...');
+            
+            // Teste 1: Listar projetos
+            const listResponse = await fetch('/polis/api/projetos.php');
+            const projects = await listResponse.json();
+            
+            document.getElementById('result').innerHTML += '<h2>Projetos na API:</h2><pre>' + JSON.stringify(projects, null, 2) + '</pre>';
+            
+            if (projects.length > 0) {
+                const projectId = projects[0].id;
+                
+                // Teste 2: Buscar projeto específico
+                const detailResponse = await fetch('/polis/api/projetos.php?id=' + projectId);
+                const projectDetail = await detailResponse.json();
+                
+                document.getElementById('result').innerHTML += '<h2>Detalhes do Projeto ID ' + projectId + ':</h2><pre>' + JSON.stringify(projectDetail, null, 2) + '</pre>';
+                
+                // Teste 3: Simular o que a página de edição faria
+                if (projectDetail && projectDetail.id) {
+                    document.getElementById('result').innerHTML += '<h2>Teste de preenchimento:</h2>';
+                    document.getElementById('result').innerHTML += '<p>Nome: ' + projectDetail.nome + '</p>';
+                    document.getElementById('result').innerHTML += '<p>Cliente ID: ' + projectDetail.cliente_id + '</p>';
+                    document.getElementById('result').innerHTML += '<p>Responsável: ' + projectDetail.responsavel + '</p>';
+                    document.getElementById('result').innerHTML += '<p>Status: ' + projectDetail.status + '</p>';
+                    
+                    // Mostrar link para edição
+                    document.getElementById('result').innerHTML += '<h2>Link de edição:</h2>';
+                    document.getElementById('result').innerHTML += '<a href="/polis/registros/registrar_projeto.php?id=' + projectId + '" target="_blank">Editar Projeto</a>';
+                }
+            }
+        } catch (error) {
+            document.getElementById('result').innerHTML += '<h2>Erro:</h2><pre>' + error.message + '</pre>';
+        }
+    }
+    
+    testProjectLoad();
+    </script>
+</body>
+</html>

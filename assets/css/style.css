@@ -1,0 +1,225 @@
+:root {
+    /* Cores */
+    --cor-principal: #012A4A; /* Azul Escuro */
+    --cor-principal-clara: #1A3F5C; /* Azul Escuro 10% mais claro */
+    --cor-secundaria: #144566; /* Azul Médio - Usado para o fundo do sidebar e developer info */
+    --cor-vibrante: #00B4D8; /* Azul Ciano Vibrante */
+    --cor-clara: #90E0EF; /* Ciano Claro */
+    --cor-fundo-card: #EAEAEA; /* Cinza Claro para Cards */
+    --cor-texto-escuro: #012A4A; /* Texto em fundos claros */
+    --cor-texto-claro: #FFFFFF; /* Texto em fundos escuros */
+    --cor-sucesso: #2A9D8F; /* Verde para sucesso */
+    --cor-erro: #E76F51; /* Vermelho para erro */
+    --cor-whatsapp-verde: #25D366; /* Verde similar ao WhatsApp para o switch */
+    --cor-sidebar-hover: rgba(255, 255, 255, 0.15); /* Cor para hover nos itens do menu */
+    --cor-sidebar-active: var(--cor-vibrante); /* Cor para item ativo no menu */
+    --cor-top-header-bg: var(--cor-secundaria); /* Fundo da barra superior */
+
+    /* Sombra */
+    --sombra-leve: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --sombra-media: 0 6px 12px rgba(0, 0, 0, 0.15);
+    --sombra-menu: 4px 0 15px rgba(0, 0, 0, 0.3); /* Sombra mais pronunciada para o menu */
+    --sombra-top-header: 0 2px 8px rgba(0, 0, 0, 0.2); /* Sombra para a barra superior */
+}
+
+/* Reset básico e fonte */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', sans-serif; /* Usando Inter para um visual moderno */
+}
+
+body {
+    background: linear-gradient(to bottom, var(--cor-principal), var(--cor-principal-clara));
+    color: var(--cor-texto-claro);
+    padding: 0;
+    line-height: 1.6;
+    overflow-x: hidden; /* Evita rolagem horizontal indesejada */
+}
+
+/* Conteúdo principal da página - precisa de padding para a barra superior */
+.main-content {
+    padding: 2rem;
+    margin-top: 70px; /* Adiciona espaço para a barra superior fixa (altura do header) */
+}
+
+/* --- Estilos de componentes existentes (mantidos para consistência) --- */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    padding: 2rem;
+}
+
+.window-container {
+    background-color: var(--cor-fundo-card);
+    color: var(--cor-texto-escuro);
+    padding: 2.5rem;
+    border-radius: 16px;
+    box-shadow: var(--sombra-media);
+    margin-bottom: 2rem;
+    grid-column: 1 / -1;
+    text-align: center;
+}
+
+.window-container h2 {
+    color: var(--cor-principal);
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+}
+
+.card {
+    background-color: var(--cor-fundo-card);
+    color: var(--cor-texto-escuro);
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: var(--sombra-leve);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--sombra-media);
+}
+
+.card h3 {
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+    color: var(--cor-principal);
+}
+
+.card p {
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.btn {
+    display: inline-block;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: var(--cor-texto-claro);
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: var(--sombra-leve);
+    text-align: center;
+}
+
+.btn-primary {
+    background: linear-gradient(45deg, var(--cor-vibrante), var(--cor-clara));
+}
+
+.btn-secondary {
+    background: linear-gradient(45deg, var(--cor-principal), var(--cor-secundaria));
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+}
+
+.checkbox-switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+.checkbox-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #000000;
+    -webkit-transition: .4s;
+    transition: .4s;
+    border-radius: 34px;
+    border: 2px solid transparent;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: var(--cor-texto-claro);
+    -webkit-transition: .4s;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: var(--cor-texto-claro);
+    border-color: #000000;
+}
+
+input:focus + .slider {
+    box-shadow: 0 0 1px var(--cor-vibrante);
+}
+
+input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+    background-color: var(--cor-whatsapp-verde);
+}
+
+.message {
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    font-weight: bold;
+    text-align: center;
+}
+
+.message.success {
+    background-color: var(--cor-sucesso);
+    color: var(--cor-texto-claro);
+}
+
+.message.error {
+    background-color: var(--cor-erro);
+    color: var(--cor-texto-claro);
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 768px) {
+    .container {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+    }
+    .window-container {
+        padding: 1.5rem;
+    }
+    .window-container h2 {
+        font-size: 1.5rem;
+    }
+    .card {
+        padding: 1rem;
+    }
+    .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+}

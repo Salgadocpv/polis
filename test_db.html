@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test DB Insert</title>
+</head>
+<body>
+    <h1>Inserindo projeto de teste...</h1>
+    <div id="result"></div>
+    
+    <script>
+    async function insertTestProject() {
+        try {
+            const response = await fetch('/polis/db_admin.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    "action": "execute",
+                    "sql": "INSERT INTO projetos (nome, cliente_id, responsavel, status, data_inicio, data_conclusao_prevista, orcamento, descricao) VALUES ('Projeto de Teste', 1, 'João Silva', 'Em Andamento', '2025-01-01', '2025-06-01', 50000.00, 'Projeto de teste para verificar o carregamento de dados')"
+                })
+            });
+            
+            const result = await response.json();
+            document.getElementById('result').innerHTML = '<pre>' + JSON.stringify(result, null, 2) + '</pre>';
+            
+            if (result.success) {
+                setTimeout(() => {
+                    testProjectAPI();
+                }, 1000);
+            }
+        } catch (error) {
+            document.getElementById('result').innerHTML = 'Erro: ' + error.message;
+        }
+    }
+    
+    async function testProjectAPI() {
+        try {
+            const response = await fetch('/polis/api/projetos.php');
+            const projects = await response.json();
+            
+            document.getElementById('result').innerHTML += '<h2>Projetos na API:</h2><pre>' + JSON.stringify(projects, null, 2) + '</pre>';
+            
+            if (projects.length > 0) {
+                const projectId = projects[0].id;
+                const detailResponse = await fetch('/polis/api/projetos.php?id=' + projectId);
+                const projectDetail = await detailResponse.json();
+                
+                document.getElementById('result').innerHTML += '<h2>Detalhes do Projeto ID ' + projectId + ':</h2><pre>' + JSON.stringify(projectDetail, null, 2) + '</pre>';
+            }
+        } catch (error) {
+            document.getElementById('result').innerHTML += '<br>Erro na API: ' + error.message;
+        }
+    }
+    
+    insertTestProject();
+    </script>
+</body>
+</html>

@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Sistema de Engenharia</title>
+    <!-- Importa a fonte 'Inter' do Google Fonts para um visual moderno -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome para ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Link para o arquivo de estilos CSS -->
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#012A4A">
+    <style>
+        /* Reset e configurações globais */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, var(--cor-principal) 0%, var(--cor-secundaria) 100%);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Fundo decorativo moderno */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0, 180, 216, 0.1) 0%, transparent 70%);
+            animation: float 20s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(-20px, -20px) rotate(0deg); }
+            50% { transform: translate(20px, 20px) rotate(180deg); }
+        }
+
+        /* Container principal mobile-first */
+        .login-container {
+            position: relative;
+            z-index: 1;
+            width: 100vw;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: transparent;
+            padding: 0;
+        }
+
+        /* Header da aplicação - estilo mobile moderno */
+        .login-header {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 1rem 1.5rem;
+            color: white;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            margin: 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            min-height: 35vh; /* Reduzida de flex: 1 para altura fixa menor */
+        }
+
+        .logo-placeholder {
+            width: 140px;
+            height: 80px;
+            margin-bottom: 1rem;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .logo-placeholder img {
+            width: 120px;
+            height: auto;
+            filter: brightness(1.2) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+        }
+
+        .login-header h1 {
+            color: white;
+            font-size: 1.9rem;
+            font-weight: 700;
+            margin: 0 0 0.3rem 0;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            letter-spacing: -0.5px;
+        }
+
+        .login-header p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.95rem;
+            font-weight: 400;
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        /* Área do formulário - estilo card moderno */
+        .login-form-container {
+            background: white;
+            border-radius: 24px 24px 0 0;
+            padding: 2rem 1.5rem 1rem;
+            flex: 1;
+            box-shadow: 0 -4px 32px rgba(0, 0, 0, 0.1);
+            position: relative;
+            min-height: 380px;
+        }
+
+        /* Handle visual para indicar área arrastável */
+        .login-form-container::before {
+            content: '';
+            position: absolute;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 36px;
+            height: 4px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 2px;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        /* Estilo moderno para inputs */
+        .form-group label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--cor-texto-escuro);
+            margin-bottom: 0.5rem;
+            opacity: 0.8;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #f0f0f0;
+            border-radius: 16px;
+            font-size: 1rem;
+            font-weight: 500;
+            background: #f8f9fa;
+            color: var(--cor-texto-escuro);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--cor-vibrante);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(0, 180, 216, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .form-input:not(:placeholder-shown) {
+            background: white;
+            border-color: #e0e0e0;
+        }
+
+        /* Container para input com ícone */
+        .input-with-icon {
+            position: relative;
+        }
+
+        .input-with-icon .form-input {
+            padding-right: 50px; /* Espaço para o ícone */
+        }
+
+        /* Ícone de toggle da senha */
+        .password-toggle {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .password-toggle:hover {
+            background: rgba(0, 180, 216, 0.1);
+        }
+
+        .password-toggle:active {
+            transform: translateY(-50%) scale(0.95);
+        }
+
+        .password-toggle i {
+            font-size: 1rem;
+            color: #ccc;
+            transition: color 0.2s ease;
+        }
+
+        .password-toggle:hover i {
+            color: var(--cor-vibrante);
+        }
+
+        .password-toggle.visible i {
+            color: var(--cor-vibrante);
+        }
+
+        /* Ícone do olho quando senha está visível */
+        .password-toggle.visible i.fa-eye-slash {
+            color: var(--cor-vibrante);
+        }
+
+        /* Botão de login moderno */
+        .login-btn {
+            width: 100%;
+            padding: 16px 24px;
+            background: linear-gradient(135deg, var(--cor-vibrante), #0099cc);
+            border: none;
+            border-radius: 16px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 16px rgba(0, 180, 216, 0.3);
+            margin-top: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .login-btn:hover::before {
+            left: 100%;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(0, 180, 216, 0.4);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(0, 180, 216, 0.3);
+        }
+
+        /* Mensagem de erro/sucesso */
+        #loginMessage {
+            margin-top: 1rem;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-weight: 500;
+            text-align: center;
+            transition: all 0.3s ease;
+            display: none;
+        }
+
+        #loginMessage.show {
+            display: block;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        #loginMessage.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        #loginMessage.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Botão de instalação PWA */
+        #installAppButton {
+            display: none; /* Oculto por padrão, JS o exibirá */
+            background: rgba(0, 180, 216, 0.1);
+            border: 2px solid var(--cor-vibrante);
+            color: var(--cor-vibrante);
+            border-radius: 12px;
+            padding: 12px 20px;
+            font-weight: 600;
+            margin-top: 1rem;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        #installAppButton:hover {
+            background: var(--cor-vibrante);
+            color: white;
+        }
+
+        #installAppButton:hover {
+            background: var(--cor-vibrante);
+            color: white;
+        }
+
+        /* Informações do desenvolvedor */
+        .developer-info {
+            color: rgba(0, 0, 0, 0.5);
+            padding: 1rem 0 0.5rem;
+            text-align: center;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-top: 0.5rem;
+        }
+
+        /* Responsividade para tablets e desktops */
+        @media (min-width: 768px) {
+            body {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding: 2rem;
+            }
+
+            .login-container {
+                width: 400px;
+                min-height: 600px;
+                max-height: 90vh;
+                border-radius: 24px;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+                overflow: hidden;
+            }
+
+            .login-form-container {
+                border-radius: 0 0 24px 24px;
+                padding: 2.5rem;
+            }
+
+            .logo-placeholder {
+                width: 140px;
+                height: 140px;
+            }
+        }
+
+        /* Estados de carregamento */
+        .login-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .login-btn.loading {
+            color: transparent;
+        }
+
+        .login-btn.loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <div class="logo-placeholder">
+                <img src="assets/images/logo-polis-branco-194w.png" alt="Polis Engenharia">
+            </div>
+            <h1>Polis Engenharia</h1>
+            <p>Faça login para continuar</p>
+        </div>
+
+        <div class="login-form-container">
+            <form class="login-form" id="loginForm">
+                <div class="form-group">
+                    <label for="username">Usuário ou E-mail</label>
+                    <input type="text" 
+                           id="username" 
+                           name="username" 
+                           class="form-input" 
+                           placeholder="Digite seu usuário ou e-mail" 
+                           required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Senha</label>
+                    <div class="input-with-icon">
+                        <input type="password" 
+                               id="password" 
+                               name="password" 
+                               class="form-input" 
+                               placeholder="Digite sua senha" 
+                               required>
+                        <button type="button" class="password-toggle" id="passwordToggle">
+                            <i class="fas fa-eye-slash" id="passwordToggleIcon"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="login-btn" id="loginBtn">
+                    Entrar
+                </button>
+
+                <div id="loginMessage"></div>
+                
+                <div class="developer-info">
+                    Desenvolvido por Coppermane Solution
+                </div>
+            </form>
+
+            
+
+            <button id="installAppButton" type="button">
+                <i class="fas fa-download"></i> Instalar App
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let deferredPrompt;
+        const installAppButton = document.getElementById('installAppButton');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Previne que o mini-infobar apareça automaticamente
+            e.preventDefault();
+            // Armazena o evento para que possa ser acionado mais tarde.
+            deferredPrompt = e;
+            // Mostra o botão de instalação
+            installAppButton.style.display = 'block';
+        });
+
+        installAppButton.addEventListener('click', (e) => {
+            // Esconde o botão de instalação
+            installAppButton.style.display = 'none';
+            // Mostra o prompt de instalação
+            deferredPrompt.prompt();
+            // Espera o usuário responder ao prompt
+            deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    console.log('Usuário aceitou o prompt de instalação');
+                } else {
+                    console.log('Usuário recusou o prompt de instalação');
+                }
+                deferredPrompt = null;
+            });
+        });
+
+        // Registra o Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                                navigator.serviceWorker.register('service-worker.js')
+                    .then(registration => {
+                        console.log('Service Worker registrado com sucesso:', registration);
+                    })
+                    .catch(error => {
+                        console.error('Falha no registro do Service Worker:', error);
+                    });
+            });
+        }
+
+        // Melhorias na UX do formulário de login
+        const loginForm = document.getElementById('loginForm');
+        const loginBtn = document.getElementById('loginBtn');
+        const loginMessageDiv = document.getElementById('loginMessage');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const passwordToggle = document.getElementById('passwordToggle');
+        const passwordToggleIcon = document.getElementById('passwordToggleIcon');
+
+        // Funcionalidade do toggle da senha
+        let passwordVisible = false;
+
+        passwordToggle.addEventListener('click', function() {
+            passwordVisible = !passwordVisible;
+            
+            if (passwordVisible) {
+                passwordInput.type = 'text';
+                passwordToggleIcon.className = 'fas fa-eye';
+                passwordToggle.classList.add('visible');
+            } else {
+                passwordInput.type = 'password';
+                passwordToggleIcon.className = 'fas fa-eye-slash';
+                passwordToggle.classList.remove('visible');
+            }
+            
+            // Mantém o foco no input após clicar no toggle
+            passwordInput.focus();
+        });
+
+        // Função para mostrar mensagens com animação
+        function showMessage(message, type = 'error') {
+            loginMessageDiv.textContent = message;
+            loginMessageDiv.className = `show ${type}`;
+            
+            setTimeout(() => {
+                loginMessageDiv.classList.remove('show');
+            }, 5000); // Remove após 5 segundos
+        }
+
+        // Função para mostrar estado de carregamento
+        function setLoadingState(loading) {
+            if (loading) {
+                loginBtn.disabled = true;
+                loginBtn.classList.add('loading');
+                loginBtn.textContent = 'Entrando...';
+            } else {
+                loginBtn.disabled = false;
+                loginBtn.classList.remove('loading');
+                loginBtn.textContent = 'Entrar';
+            }
+        }
+
+        // Validação em tempo real
+        function validateForm() {
+            const isValid = usernameInput.value.trim() !== '' && passwordInput.value.trim() !== '';
+            loginBtn.disabled = !isValid;
+            return isValid;
+        }
+
+        usernameInput.addEventListener('input', validateForm);
+        passwordInput.addEventListener('input', validateForm);
+
+        // Função para obter token CSRF
+        async function getCSRFToken() {
+            try {
+                const response = await fetch('/polis/api/csrf-token.php');
+                const data = await response.json();
+                return data.csrf_token;
+            } catch (error) {
+                console.error('Erro ao obter token CSRF:', error);
+                return null;
+            }
+        }
+
+        // Submissão do formulário
+        loginForm.addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            if (!validateForm()) {
+                showMessage('Por favor, preencha todos os campos.', 'error');
+                return;
+            }
+
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value.trim();
+            const csrfToken = await getCSRFToken();
+
+            if (!csrfToken) {
+                showMessage('Erro de segurança. Recarregue a página.', 'error');
+                return;
+            }
+
+            setLoadingState(true);
+            loginMessageDiv.classList.remove('show'); // Remove mensagens anteriores
+
+            try {
+                const response = await fetch('/polis/api/login.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        username: username, 
+                        password: password,
+                        csrf_token: csrfToken
+                    })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showMessage('Login realizado com sucesso! Redirecionando...', 'success');
+                    
+                    // Adiciona um pequeno delay para melhor UX
+                    setTimeout(() => {
+                        window.location.href = result.redirect;
+                    }, 1500);
+                } else {
+                    setLoadingState(false);
+                    showMessage(result.message || 'Credenciais inválidas. Tente novamente.', 'error');
+                    
+                    // Adiciona shake animation nos inputs
+                    usernameInput.style.animation = 'shake 0.5s';
+                    passwordInput.style.animation = 'shake 0.5s';
+                    
+                    setTimeout(() => {
+                        usernameInput.style.animation = '';
+                        passwordInput.style.animation = '';
+                        passwordInput.focus();
+                        passwordInput.select();
+                    }, 500);
+                }
+            } catch (error) {
+                setLoadingState(false);
+                console.error('Erro ao tentar fazer login:', error);
+                showMessage('Erro ao conectar com o servidor. Verifique sua conexão.', 'error');
+            }
+        });
+
+        // CSS para animação de shake (será injetado dinamicamente)
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                25% { transform: translateX(-5px); }
+                75% { transform: translateX(5px); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Inicialização
+        validateForm(); // Validação inicial
+    </script>
+</body>
+</html>

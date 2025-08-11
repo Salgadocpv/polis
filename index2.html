@@ -1,0 +1,87 @@
+ <!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Engenharia - Exemplo de UI</title>
+    <!-- Importa a fonte 'Inter' do Google Fonts para um visual moderno -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Link para o arquivo de estilos CSS -->
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <!-- Exemplo de uma "janela" ou container principal para seções maiores -->
+    <div class="window-container">
+        <h2>Visão Geral do Sistema de Gerenciamento</h2>
+        <p>Este é um exemplo de como as "janelas" ou containers maiores podem ser estilizados. Eles servem para agrupar seções importantes do seu sistema, oferecendo uma área de conteúdo clara e bem definida.</p>
+        <div style="text-align: center; margin-top: 1.5rem;">
+            <button class="btn btn-primary">Ação Principal</button>
+            <button class="btn btn-secondary" style="margin-left: 1rem;">Ação Secundária</button>
+        </div>
+    </div>
+
+    <!-- Container para agrupar os cartões e outros elementos -->
+    <div class="container">
+        <!-- Cartão de Informação 1: Exemplo de um card de projeto -->
+        <div class="card">
+            <h3>Projeto Alpha</h3>
+            <p>Gerencie as tarefas e o progresso da equipe no Projeto Alpha. Prazo final se aproximando, foco na entrega!</p>
+            <div style="margin-top: 1rem;">
+                <button class="btn btn-primary">Ver Detalhes</button>
+            </div>
+        </div>
+
+        <!-- Cartão de Informação 2: Exemplo de um card de equipe -->
+        <div class="card">
+            <h3>Equipe de Desenvolvimento</h3>
+            <p>Acompanhe a performance e as atividades diárias da equipe de desenvolvimento de software.</p>
+            <div style="margin-top: 1rem;">
+                <button class="btn btn-secondary">Gerenciar Equipe</button>
+            </div>
+        </div>
+
+        <!-- Cartão de Informação 3: Exemplo de um card de relatório -->
+        <div class="card">
+            <h3>Relatórios Mensais</h3>
+            <p>Acesse os relatórios de produtividade e métricas de desempenho para o mês atual.</p>
+            <div style="margin-top: 1rem;">
+                <button class="btn btn-primary">Gerar Relatório</button>
+            </div>
+        </div>
+
+        <!-- Cartão de Checkbox com Switch: Exemplo de configuração -->
+        <div class="card">
+            <h3>Configurações de Notificação</h3>
+            <p>Ative ou desative as notificações para novas tarefas e atualizações de status.</p>
+            <label class="checkbox-switch">
+                <input type="checkbox" checked>
+                <span class="slider"></span>
+            </label>
+            <p style="font-size: 0.9rem; color: var(--cor-principal);">Notificações ativadas.</p>
+        </div>
+
+        <!-- Cartão de Mensagens de Status: Exemplo de feedback ao usuário -->
+        <div class="card">
+            <h3>Status do Sistema</h3>
+            <p>Verifique o status atual das operações e alertas importantes.</p>
+            <div class="message success">
+                Sistema online e funcionando perfeitamente.
+            </div>
+            <div class="message error">
+                Atenção: Uma tarefa está atrasada!
+            </div>
+        </div>
+
+        <!-- Cartão com Botões Diversos: Exemplo de ações rápidas -->
+        <div class="card">
+            <h3>Ações Rápidas</h3>
+            <p>Use os botões para realizar ações comuns no sistema.</p>
+            <div style="margin-top: 1rem; display: flex; flex-wrap: wrap; gap: 10px;">
+                <button class="btn btn-primary">Criar Nova Tarefa</button>
+                <button class="btn btn-secondary">Adicionar Membro</button>
+                <button class="btn btn-primary">Salvar Rascunho</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
