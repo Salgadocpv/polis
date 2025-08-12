@@ -191,13 +191,8 @@ function handleGet($conn) {
     $id = $_GET['id'] ?? null;
 
     if ($id) {
-        // ===== BUSCAR COLABORADOR ESPECÍFICO COM DADOS DO USUÁRIO =====
-        $stmt = $conn->prepare("
-            SELECT c.*, u.username as usuario_sistema, u.primeira_senha, u.ultimo_login
-            FROM colaboradores c
-            LEFT JOIN usuarios u ON c.id = u.colaborador_id
-            WHERE c.id = ?
-        ");
+        // ===== BUSCAR COLABORADOR ESPECÍFICO =====
+        $stmt = $conn->prepare("SELECT * FROM colaboradores WHERE id = ?");
         $stmt->bind_param("i", $id);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -208,14 +203,6 @@ function handleGet($conn) {
                 $colaborador['foto_url'] = str_replace('\\', '/', $colaborador['foto_url']);
             }
             
-            // Se não tem campo usuario na tabela colaboradores, usar usuario_sistema
-            if (empty($colaborador['usuario']) && !empty($colaborador['usuario_sistema'])) {
-                $colaborador['usuario'] = $colaborador['usuario_sistema'];
-            }
-            
-            // Remover campos internos se existirem
-            unset($colaborador['usuario_sistema']);
-            
             echo json_encode($colaborador);
         } else {
             http_response_code(404);
@@ -224,26 +211,13 @@ function handleGet($conn) {
         $stmt->close();
     } else {
         // ===== LISTAR TODOS COLABORADORES =====
-        $result = $conn->query("
-            SELECT c.*, u.username as usuario_sistema, u.primeira_senha, u.ultimo_login
-            FROM colaboradores c
-            LEFT JOIN usuarios u ON c.id = u.colaborador_id
-            ORDER BY c.data_cadastro DESC
-        ");
+        $result = $conn->query("SELECT * FROM colaboradores ORDER BY data_cadastro DESC");
         $colaboradores = [];
         while ($row = $result->fetch_assoc()) {
             // Garante que a foto_url use barras normais para URLs para todos os colaboradores
             if (isset($row['foto_url'])) {
                 $row['foto_url'] = str_replace('\\', '/', $row['foto_url']);
             }
-            
-            // Se não tem campo usuario na tabela colaboradores, usar usuario_sistema
-            if (empty($row['usuario']) && !empty($row['usuario_sistema'])) {
-                $row['usuario'] = $row['usuario_sistema'];
-            }
-            
-            // Remover campos internos
-            unset($row['usuario_sistema']);
             
             $colaboradores[] = $row;
         }
@@ -282,42 +256,25 @@ function handlePost($conn) {
         }
     }
 
-    if (!$nome || !$cpf || !$email || !$usuario) {
+    if (!$nome || !$cpf || !$email) {
         http_response_code(400);
-        echo json_encode(['message' => 'Nome, CPF, Email e Usuário são obrigatórios']);
+        echo json_encode(['message' => 'Nome, CPF e Email são obrigatórios']);
         return;
     }
 
-    $stmt = $conn->prepare("INSERT INTO colaboradores (nome, cpf, cargo, departamento, email, usuario, telefone, data_contratacao, nivel_acesso, foto_url, observacoes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("sssssssssss", $nome, $cpf, $cargo, $departamento, $email, $usuario, $telefone, $data_contratacao, $nivel_acesso, $foto_url, $observacoes);
+    $stmt = $conn->prepare("INSERT INTO colaboradores (nome, cpf, cargo, departamento, email, telefone, data_contratacao, nivel_acesso, foto_url, observacoes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("ssssssssss", $nome, $cpf, $cargo, $departamento, $email, $telefone, $data_contratacao, $nivel_acesso, $foto_url, $observacoes);
 
     if ($stmt->execute()) {
         $colaborador_id = $stmt->insert_id;
         
-        // ===== CRIAR USUÁRIO AUTOMATICAMENTE =====
-        // Após criar colaborador, criar usuário para login usando CPF como senha inicial
-        $created_user = createUserForCollaborator($conn, $colaborador_id, $usuario, $email, $cpf, $nivel_acesso);
-        
-        if ($created_user['success']) {
-            http_response_code(201);
-            echo json_encode([
-                'success' => true, 
-                'message' => 'Colaborador e usuário criados com sucesso', 
-                'id' => $colaborador_id, 
-                'user_id' => $created_user['user_id'],
-                'foto_url' => $foto_url
-            ]);
-        } else {
-            // Se falhou ao criar usuário, ainda retorna sucesso do colaborador mas com aviso
-            http_response_code(201);
-            echo json_encode([
-                'success' => true, 
-                'message' => 'Colaborador criado com sucesso, mas houve erro ao criar usuário: ' . $created_user['message'], 
-                'id' => $colaborador_id,
-                'foto_url' => $foto_url,
-                'user_creation_error' => true
-            ]);
-        }
+        http_response_code(201);
+        echo json_encode([
+            'success' => true, 
+            'message' => 'Colaborador criado com sucesso', 
+            'id' => $colaborador_id,
+            'foto_url' => $foto_url
+        ]);
     } else {
         if ($stmt->errno === 1062) { // Código de erro do MySQL para entrada duplicada
             $errorMessage = $stmt->error;
@@ -417,14 +374,14 @@ function handlePut($conn) {
         $foto_url_to_save = null;
     }
 
-    if (!$nome || !$cpf || !$email || !$usuario) {
+    if (!$nome || !$cpf || !$email) {
         http_response_code(400);
-        echo json_encode(['message' => 'Nome, CPF, Email e Usuário são obrigatórios']);
+        echo json_encode(['message' => 'Nome, CPF e Email são obrigatórios']);
         return;
     }
 
-    $stmt = $conn->prepare("UPDATE colaboradores SET nome = ?, cpf = ?, cargo = ?, departamento = ?, email = ?, usuario = ?, telefone = ?, data_contratacao = ?, nivel_acesso = ?, foto_url = ?, observacoes = ? WHERE id = ?");
-    $stmt->bind_param("sssssssssssi", $nome, $cpf, $cargo, $departamento, $email, $usuario, $telefone, $data_contratacao, $nivel_acesso, $foto_url_to_save, $observacoes, $id);
+    $stmt = $conn->prepare("UPDATE colaboradores SET nome = ?, cpf = ?, cargo = ?, departamento = ?, email = ?, telefone = ?, data_contratacao = ?, nivel_acesso = ?, foto_url = ?, observacoes = ? WHERE id = ?");
+    $stmt->bind_param("ssssssssssi", $nome, $cpf, $cargo, $departamento, $email, $telefone, $data_contratacao, $nivel_acesso, $foto_url_to_save, $observacoes, $id);
 
     if ($stmt->execute()) {
         if ($stmt->affected_rows > 0) {
@@ -498,88 +455,7 @@ function handleDelete($conn) {
     $stmt->close();
 }
 
-/**
- * ===== FUNÇÃO PARA CRIAR USUÁRIO AUTOMATICAMENTE =====
- * 
- * Cria um usuário no sistema vinculado ao colaborador recém-criado
- * A senha inicial será o CPF do colaborador (apenas números)
- * O usuário será marcado como primeira_senha = TRUE para forçar troca no primeiro login
- * 
- * @param mysqli $conn Conexão com banco de dados
- * @param int $colaborador_id ID do colaborador criado
- * @param string $username Nome de usuário
- * @param string $email E-mail do colaborador
- * @param string $cpf CPF do colaborador (será usado como senha inicial)
- * @param string $nivel_acesso Nível de acesso do colaborador
- * @return array Array com success (bool) e message/user_id
- */
-function createUserForCollaborator($conn, $colaborador_id, $username, $email, $cpf, $nivel_acesso) {
-    try {
-        error_log("Criando usuário para colaborador ID: $colaborador_id");
-        
-        // ===== LIMPAR CPF PARA USAR COMO SENHA =====
-        // Remove pontos, hífens e espaços do CPF para usar como senha
-        $senha_inicial = preg_replace('/[^0-9]/', '', $cpf);
-        
-        if (empty($senha_inicial) || strlen($senha_inicial) != 11) {
-            return [
-                'success' => false,
-                'message' => 'CPF inválido para gerar senha inicial'
-            ];
-        }
-        
-        // ===== VERIFICAR SE USUÁRIO JÁ EXISTE =====
-        $stmt = $conn->prepare("SELECT id FROM usuarios WHERE username = ? OR email = ?");
-        $stmt->bind_param("ss", $username, $email);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        
-        if ($result->num_rows > 0) {
-            $stmt->close();
-            return [
-                'success' => false,
-                'message' => 'Nome de usuário ou e-mail já existe no sistema'
-            ];
-        }
-        $stmt->close();
-        
-        // ===== CRIAR HASH DA SENHA =====
-        $password_hash = password_hash($senha_inicial, PASSWORD_DEFAULT);
-        
-        // ===== INSERIR USUÁRIO =====
-        $stmt = $conn->prepare("
-            INSERT INTO usuarios (colaborador_id, username, email, password_hash, nivel_acesso, primeira_senha) 
-            VALUES (?, ?, ?, ?, ?, TRUE)
-        ");
-        $stmt->bind_param("issss", $colaborador_id, $username, $email, $password_hash, $nivel_acesso);
-        
-        if ($stmt->execute()) {
-            $user_id = $stmt->insert_id;
-            error_log("Usuário criado com sucesso: ID $user_id para colaborador $colaborador_id");
-            $stmt->close();
-            
-            return [
-                'success' => true,
-                'user_id' => $user_id,
-                'message' => 'Usuário criado com sucesso'
-            ];
-        } else {
-            error_log("Erro ao inserir usuário: " . $stmt->error);
-            $stmt->close();
-            return [
-                'success' => false,
-                'message' => 'Erro ao inserir usuário no banco de dados'
-            ];
-        }
-        
-    } catch (Exception $e) {
-        error_log("Exceção ao criar usuário: " . $e->getMessage());
-        return [
-            'success' => false,
-            'message' => 'Erro interno: ' . $e->getMessage()
-        ];
-    }
-}
+// Função de criação automática de usuários removida - funcionalidade simplificada
 
 $conn->close();
 
