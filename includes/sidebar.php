@@ -390,7 +390,7 @@
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
         <div class="sidebar-logo-placeholder">
-            <img class="logo_polis" src="/Polis/assets/images/logo-polis-branco-194w.png" alt="Logotipo da Empresa" style="width: 170px;">
+            <img class="logo_polis" src="/polis/assets/images/logo-polis-branco-194w.png" alt="Logotipo da Empresa" style="width: 170px;">
         </div>
         <!-- Botão para fechar o menu, posicionado à direita -->
         <button class="sidebar-close-btn" id="closeSidebarBtn">
@@ -399,14 +399,14 @@
     </div>
     <nav class="sidebar-nav">
         <ul>
-            <li><a href="/Polis/dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-            <li><a href="/Polis/listas/lista_clientes.php"><i class="fas fa-users"></i> Clientes</a></li>
-            <li><a href="/Polis/listas/lista_colaboradores.php"><i class="fas fa-user-tie"></i> Colaboradores</a></li>
-            <li><a href="/Polis/listas/lista_projetos.php"><i class="fas fa-project-diagram"></i> Projetos</a></li>
-            <li><a href="/Polis/calendario.php?view=today"><i class="fas fa-calendar-alt"></i> Calendário</a></li>
-            <li><a href="/Polis/setup.php"><i class="fas fa-cog"></i> Configurações</a></li>
+            <li><a href="/polis/dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="/polis/listas/lista_clientes.php"><i class="fas fa-users"></i> Clientes</a></li>
+            <li><a href="/polis/listas/lista_colaboradores.php"><i class="fas fa-user-tie"></i> Colaboradores</a></li>
+            <li><a href="/polis/listas/lista_projetos.php"><i class="fas fa-project-diagram"></i> Projetos</a></li>
+            <li><a href="/polis/calendario.php?view=today"><i class="fas fa-calendar-alt"></i> Calendário</a></li>
+            <li><a href="/polis/setup.php"><i class="fas fa-cog"></i> Configurações</a></li>
             <li><a href="#"><i class="fas fa-chart-line"></i> Relatórios</a></li>
-            <li><a href="/Polis/api/logout.php"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
+            <li><a href="/polis/api/logout.php"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
         </ul>
     </nav>
 </aside>
@@ -420,23 +420,23 @@
         <i class="fas fa-bars"></i>
     </button>
     <div class="mobile-menu-items" id="mobileMenuItems">
-        <a href="/Polis/dashboard.php" class="mobile-menu-item">
+        <a href="/polis/dashboard.php" class="mobile-menu-item">
             <i class="fas fa-tachometer-alt"></i>
             <span>Dashboard</span>
         </a>
-        <a href="/Polis/listas/lista_clientes.php" class="mobile-menu-item">
+        <a href="/polis/listas/lista_clientes.php" class="mobile-menu-item">
             <i class="fas fa-users"></i>
             <span>Clientes</span>
         </a>
-        <a href="/Polis/listas/lista_colaboradores.php" class="mobile-menu-item">
+        <a href="/polis/listas/lista_colaboradores.php" class="mobile-menu-item">
             <i class="fas fa-user-tie"></i>
             <span>Colaboradores</span>
         </a>
-        <a href="/Polis/listas/lista_projetos.php" class="mobile-menu-item">
+        <a href="/polis/listas/lista_projetos.php" class="mobile-menu-item">
             <i class="fas fa-project-diagram"></i>
             <span>Projetos</span>
         </a>
-        <a href="/Polis/calendario.php?view=today" class="mobile-menu-item">
+        <a href="/polis/calendario.php?view=today" class="mobile-menu-item">
             <i class="fas fa-calendar-alt"></i>
             <span>Calendário</span>
         </a>
@@ -444,11 +444,11 @@
             <i class="fas fa-chart-line"></i>
             <span>Relatórios</span>
         </a>
-        <a href="/Polis/setup.php" class="mobile-menu-item">
+        <a href="/polis/setup.php" class="mobile-menu-item">
             <i class="fas fa-cog"></i>
             <span>Configurações</span>
         </a>
-        <a href="/Polis/api/logout.php" class="mobile-menu-item">
+        <a href="/polis/api/logout.php" class="mobile-menu-item">
             <i class="fas fa-sign-out-alt"></i>
             <span>Sair</span>
         </a>

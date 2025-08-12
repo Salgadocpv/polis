@@ -59,6 +59,53 @@ git push origin master
 
 ## 🆘 Troubleshooting
 
+### Git Deploy Não Funciona
+**Passos para resolver:**
+
+1. **Verificar Configuração Git Deploy:**
+   - hPanel → Git Deploy
+   - Repository URL: `https://github.com/Salgadocpv/polis.git` (com 'S' maiúsculo)
+   - Branch: `master`
+   - Deploy path: `/public_html/polis`
+   - Webhook: ✅ ATIVO
+
+2. **Verificar Logs:**
+   - Git Deploy → **View Logs**
+   - Procure por erros de:
+     - Autenticação
+     - Permissões
+     - Path incorreto
+
+3. **Teste Manual:**
+   - Clique em **"Deploy Now"** para forçar deploy
+   - Aguarde 2-5 minutos
+
+4. **Repositório Público:**
+   - Confirme se o repositório GitHub está **PÚBLICO**
+   - Hostinger não acessa repositórios privados sem token
+
+### Soluções Alternativas
+
+#### Opção 1: Deploy Manual via File Manager
+1. **Download do ZIP:**
+   - GitHub → Code → Download ZIP
+   - Extrair localmente
+
+2. **Upload via File Manager:**
+   - hPanel → File Manager
+   - Navegar para `/public_html/polis/`
+   - Upload todos os arquivos
+   - Configurar `api/conexao.php`
+
+#### Opção 2: Deploy via FTP
+```bash
+# Use cliente FTP (FileZilla, WinSCP, etc.)
+# Host: ftp.hostinger.com
+# Usuário: seu_usuario_ftp
+# Senha: sua_senha_ftp
+# Diretório: /public_html/polis/
+```
+
 ### Erro de Permissões
 Se houver erro de permissões, acesse **File Manager** e configure:
 - Pastas: `755`
@@ -70,7 +117,7 @@ Se houver erro de permissões, acesse **File Manager** e configure:
 - Confirme se o banco tem as tabelas criadas
 - Check **Error Logs** no hPanel para detalhes
 
-### Deploy Não Funcionou
-1. Verifique **Git Deploy → Logs**
-2. Confirme se o webhook está ativo
-3. Teste o repositório manualmente: **Deploy Now**
+### Verificar se Deploy Funcionou
+1. **Acesse**: `https://seu-dominio.com/polis`
+2. **File Manager**: Verifique se arquivos estão em `/public_html/polis/`
+3. **Error Logs**: Check se há erros PHP

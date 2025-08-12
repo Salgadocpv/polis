@@ -148,7 +148,7 @@ $user_photo_url = "https://placehold.co/40x40/00B4D8/FFFFFF?text=JS"; // Placeho
     <div class="header-content">
         <!-- Logotipo da Empresa (canto esquerdo) -->
         <div class="header-logo">
-            <img class="logo_polis" src="/Polis/assets/images/logo-polis-branco-194w.png" alt="Logotipo da Empresa">
+            <img class="logo_polis" src="/polis/assets/images/logo-polis-branco-194w.png" alt="Logotipo da Empresa">
         </div>
 
         <!-- Informações do Usuário (canto direito) -->

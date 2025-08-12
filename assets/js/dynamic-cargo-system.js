@@ -5,7 +5,7 @@
 
 class DynamicCargoSystem {
     constructor() {
-        this.baseUrl = '/Polis/api/valores_fixos.php';
+        this.baseUrl = '/polis/api/valores_fixos.php';
         this.cache = new Map();
         this.init();
     }

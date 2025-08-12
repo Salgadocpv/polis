@@ -9,7 +9,9 @@
       "Bash(winget install:*)",
       "Bash(git remote add:*)",
       "Bash(git push:*)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(php:*)",
+      "Bash(C:/xampp/php/php.exe \"C:\\xampp\\htdocs\\polis\\prepare-deploy.php\")"
     ],
     "deny": []
   }

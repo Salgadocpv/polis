@@ -6,7 +6,7 @@
 
 class AddressSystem {
     constructor() {
-        this.baseUrl = '/Polis/api/enderecos.php';
+        this.baseUrl = '/polis/api/enderecos.php';
         this.cache = new Map();
         this.init();
     }

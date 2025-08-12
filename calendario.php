@@ -107,7 +107,7 @@ if (!isset($_SESSION['user_id'])) {
         include 'includes/sidebar.php';
 
         // Buscar eventos da API
-        $events_json = file_get_contents('http://localhost/Polis/api/eventos.php');
+        $events_json = file_get_contents('http://localhost/polis/api/eventos.php');
         $events_data = json_decode($events_json, true);
 
         if ($events_data === null && json_last_error() !== JSON_ERROR_NONE) {
