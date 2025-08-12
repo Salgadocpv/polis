@@ -148,7 +148,7 @@ $user_photo_url = "https://placehold.co/40x40/00B4D8/FFFFFF?text=JS"; // Placeho
     <div class="header-content">
         <!-- Logotipo da Empresa (canto esquerdo) -->
         <div class="header-logo">
-            <img class="logo_polis" src="/polis/assets/images/logo-polis-branco-194w.png" alt="Logotipo da Empresa">
+            <img class="logo_polis" src="assets/images/logo-polis-branco-194w.png" alt="Logotipo da Empresa">
         </div>
 
         <!-- Informações do Usuário (canto direito) -->
@@ -214,6 +214,9 @@ if (isset($_SESSION['nivel_acesso']) && strtolower(trim($_SESSION['nivel_acesso'
             setTimeout(disableElements, 500); // 500ms de atraso
         });
     </script>
+    
+    <!-- Script para correção automática dos paths do logotipo -->
+    <script src="assets/js/logo-path-fix.js"></script>
 HTML;
 }
 ?>

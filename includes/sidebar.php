@@ -390,7 +390,7 @@
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
         <div class="sidebar-logo-placeholder">
-            <img class="logo_polis" src="/polis/assets/images/logo-polis-branco-194w.png" alt="Logotipo da Empresa" style="width: 170px;">
+            <img class="logo_polis" src="assets/images/logo-polis-branco-194w.png" alt="Logotipo da Empresa" style="width: 170px;">
         </div>
         <!-- Botão para fechar o menu, posicionado à direita -->
         <button class="sidebar-close-btn" id="closeSidebarBtn">
@@ -568,3 +568,6 @@
         }
     });
 </script>
+
+<!-- Script para correção automática dos paths do logotipo -->
+<script src="assets/js/logo-path-fix.js"></script>
