@@ -12,14 +12,14 @@
 2. Configure os seguintes dados:
    - **Repository URL**: `https://github.com/salgadocpv/polis.git`
    - **Branch**: `master`
-   - **Deploy path**: `/public_html` (ou `/public_html/polis` se for subpasta)
+   - **Deploy path**: `/public_html/polis`
    - **Webhook**: ✅ Habilitar (deploy automático)
 
 ### 3. Configurar Arquivo de Conexão no Servidor
 ⚠️ **IMPORTANTE**: Após o primeiro deploy, você precisa configurar a conexão do banco:
 
 1. Acesse **File Manager** no hPanel
-2. Navegue até `/public_html/api/`
+2. Navegue até `/public_html/polis/api/`
 3. Copie o arquivo `conexao.exemplo.php` para `conexao.php`
 4. Edite `conexao.php` e atualize a senha do banco:
    ```php
@@ -35,7 +35,7 @@ git push origin master
 ```
 
 ### 5. Verificar Deploy
-- Acesse seu site: `https://seu-dominio.com`
+- Acesse seu site: `https://seu-dominio.com/polis`
 - Verifique logs no hPanel: **Git Deploy → View Logs**
 - Em caso de erro, check **Error Logs** no hPanel
 
