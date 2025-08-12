@@ -91,8 +91,7 @@ if ($method === 'POST') {
 
     // ===== BUSCA DO USUÁRIO NO BANCO =====
     // Prepared statement para buscar usuário por username OU email
-    // Inclui campos para controle de primeira senha
-    $stmt = $conn->prepare("SELECT id, username, email, password_hash, nivel_acesso, primeira_senha, colaborador_id FROM usuarios WHERE username = ? OR email = ?");
+    $stmt = $conn->prepare("SELECT id, username, email, password_hash, nivel_acesso FROM usuarios WHERE username = ? OR email = ?");
     
     // Vincula os mesmos parâmetros para ambas as condições WHERE
     $stmt->bind_param("ss", $username_or_email, $username_or_email);
@@ -122,42 +121,15 @@ if ($method === 'POST') {
         // Registra login bem-sucedido com detalhes do usuário
         Security::logActivity('LOGIN_SUCCESS', "User: {$user['username']} | Email: {$user['email']}", $user['id']);
         
-        // ===== VERIFICAÇÃO DE PRIMEIRA SENHA =====
-        // Verifica se é o primeiro login e precisa trocar a senha
-        if ($user['primeira_senha'] == 1) {
-            // Registra primeiro login detectado
-            Security::logActivity('FIRST_LOGIN_DETECTED', "User: {$user['username']} precisa trocar senha");
-            
-            // Cria sessão temporária apenas para troca de senha
-            $_SESSION['temp_user_id'] = $user['id'];
-            $_SESSION['temp_username'] = $user['username'];
-            $_SESSION['first_login'] = true;
-            
-            // Não cria sessão completa até que a senha seja alterada
-            // Redireciona para página de troca de primeira senha
-            echo json_encode([
-                'success' => true, 
-                'message' => 'Primeira senha detectada. É necessário alterar sua senha.',
-                'first_login' => true,
-                'redirect' => 'alterar_primeira_senha.php'
-            ]);
-            http_response_code(200);
-            return; // Para aqui, não continua com login normal
-        }
+        // Primeira senha removida - funcionalidade simplificada
 
         // ===== CRIAÇÃO DE SESSÃO SEGURA =====
         // Armazena dados essenciais na sessão PHP
         $_SESSION['user_id'] = $user['id'];              // ID único do usuário
         $_SESSION['username'] = $user['username'];        // Nome de usuário
         $_SESSION['nivel_acesso'] = $user['nivel_acesso']; // Nível de permissão
-        $_SESSION['colaborador_id'] = $user['colaborador_id']; // ID do colaborador vinculado
 
-        // ===== ATUALIZAR ÚLTIMO LOGIN =====
-        // Registra timestamp do último login no banco
-        $update_stmt = $conn->prepare("UPDATE usuarios SET ultimo_login = CURRENT_TIMESTAMP WHERE id = ?");
-        $update_stmt->bind_param("i", $user['id']);
-        $update_stmt->execute();
-        $update_stmt->close();
+        // Último login removido - funcionalidade simplificada
 
         // ===== LÓGICA DE REDIRECIONAMENTO =====
         // Define página de destino baseada no nível de acesso do usuário
