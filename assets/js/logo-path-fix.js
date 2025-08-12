@@ -13,20 +13,43 @@ document.addEventListener('DOMContentLoaded', function() {
     // Determina o prefixo correto baseado no ambiente e localização
     let basePath = '';
     
+    // Detecta a profundidade da pasta atual
+    const pathSegments = currentPath.split('/').filter(segment => segment.length > 0);
+    const depth = pathSegments.length - 1; // -1 porque o último pode ser arquivo
+    
     if (isLocal) {
-        // Ambiente local - usa /Polis/ ou /polis/ baseado na URL atual
+        // Ambiente local - detecta automaticamente baseado na URL
         if (currentPath.includes('/Polis/')) {
-            basePath = '/Polis/';
+            // Calcula ../s necessários baseado na profundidade
+            const upLevels = '../'.repeat(Math.max(0, depth - 1));
+            basePath = upLevels;
         } else if (currentPath.includes('/polis/')) {
-            basePath = '/polis/';
+            const upLevels = '../'.repeat(Math.max(0, depth - 1));
+            basePath = upLevels;
         } else {
             // Se não detectar, assume que está na raiz do projeto
             basePath = './';
         }
     } else {
-        // Ambiente de produção - sempre usa /polis/
-        basePath = '/polis/';
+        // Ambiente de produção
+        if (currentPath.includes('/polis/')) {
+            // Calcula a profundidade relativa a /polis/
+            const polisIndex = pathSegments.indexOf('polis');
+            const relativeDepth = pathSegments.length - polisIndex - 1;
+            
+            if (relativeDepth > 0) {
+                // Está em subpasta, usa paths relativos
+                basePath = '../'.repeat(relativeDepth);
+            } else {
+                // Está na raiz do polis
+                basePath = './';
+            }
+        } else {
+            basePath = '/polis/';
+        }
     }
+    
+    console.log(`📁 Detectado - Path: ${currentPath}, Depth: ${depth}, BasePath: ${basePath}`);
     
     // Seleciona todas as imagens de logotipo
     const logoImages = document.querySelectorAll('.logo_polis, img[alt*="Logotipo"], img[alt*="logo"], img[src*="logo-polis"]');
@@ -50,13 +73,15 @@ document.addEventListener('DOMContentLoaded', function() {
         img.onerror = function() {
             console.warn('Logo não encontrado em:', this.src);
             
-            // Tenta paths alternativos
+            // Tenta paths alternativos baseado na estrutura
             const alternatives = [
                 basePath + 'assets/images/logo-polis-branco-194w.png',
                 './assets/images/logo-polis-branco-194w.png',
                 '../assets/images/logo-polis-branco-194w.png',
+                '../../assets/images/logo-polis-branco-194w.png',
                 '/polis/assets/images/logo-polis-branco-194w.png',
-                '/Polis/assets/images/logo-polis-branco-194w.png'
+                '/Polis/assets/images/logo-polis-branco-194w.png',
+                'assets/images/logo-polis-branco-194w.png'
             ];
             
             const currentIndex = alternatives.indexOf(this.src);

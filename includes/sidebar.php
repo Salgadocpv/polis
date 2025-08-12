@@ -570,7 +570,56 @@
 </script>
 
 <!-- Script para correção automática dos paths do logotipo -->
-<script src="assets/js/logo-path-fix.js"></script>
-
-<!-- Script para prevenir zoom automático em mobile -->
-<script src="assets/js/no-zoom-mobile.js"></script>
+<script>
+// Detecta automaticamente o path correto para os scripts
+(function() {
+    const currentPath = window.location.pathname;
+    let scriptBasePath = '';
+    
+    // Calcula a profundidade relativa
+    const pathSegments = currentPath.split('/').filter(segment => segment.length > 0);
+    
+    if (currentPath.includes('/polis/')) {
+        const polisIndex = pathSegments.indexOf('polis');
+        const relativeDepth = pathSegments.length - polisIndex - 1;
+        
+        if (relativeDepth > 0) {
+            scriptBasePath = '../'.repeat(relativeDepth);
+        } else {
+            scriptBasePath = './';
+        }
+    } else if (currentPath.includes('/Polis/')) {
+        const polisIndex = pathSegments.indexOf('Polis');
+        const relativeDepth = pathSegments.length - polisIndex - 1;
+        
+        if (relativeDepth > 0) {
+            scriptBasePath = '../'.repeat(relativeDepth);
+        } else {
+            scriptBasePath = './';
+        }
+    } else {
+        scriptBasePath = './';
+    }
+    
+    // Carrega os scripts dinamicamente
+    const scripts = [
+        'assets/js/logo-path-fix.js',
+        'assets/js/no-zoom-mobile.js'
+    ];
+    
+    scripts.forEach(scriptPath => {
+        const script = document.createElement('script');
+        script.src = scriptBasePath + scriptPath;
+        script.onerror = function() {
+            console.warn('Script não carregado:', this.src);
+            // Tenta path alternativo
+            const altScript = document.createElement('script');
+            altScript.src = scriptPath; // Path direto como fallback
+            document.head.appendChild(altScript);
+        };
+        document.head.appendChild(script);
+    });
+    
+    console.log('📜 Scripts carregados com base path:', scriptBasePath);
+})();
+</script>
