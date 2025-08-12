@@ -571,3 +571,6 @@
 
 <!-- Script para correção automática dos paths do logotipo -->
 <script src="assets/js/logo-path-fix.js"></script>
+
+<!-- Script para prevenir zoom automático em mobile -->
+<script src="assets/js/no-zoom-mobile.js"></script>

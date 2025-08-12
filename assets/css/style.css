@@ -223,3 +223,6 @@ input:checked + .slider:before {
         margin-bottom: 0.5rem;
     }
 }
+
+/* ===== IMPORTAÇÃO DE CSS PARA PREVENIR ZOOM EM MOBILE ===== */
+@import url('./no-zoom.css');

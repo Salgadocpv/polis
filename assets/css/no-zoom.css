@@ -1,0 +1,136 @@
+/**
+ * PREVENÇÃO DE ZOOM AUTOMÁTICO EM INPUTS - MOBILE
+ * 
+ * Este arquivo previne o zoom automático que ocorre em dispositivos móveis
+ * quando o usuário clica em inputs com font-size menor que 16px
+ */
+
+/* Previne zoom em todos os inputs em dispositivos móveis */
+@media screen and (max-width: 768px) {
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="number"],
+    input[type="tel"],
+    input[type="url"],
+    input[type="search"],
+    input[type="date"],
+    input[type="datetime-local"],
+    input[type="month"],
+    input[type="week"],
+    input[type="time"],
+    select,
+    textarea {
+        /* Font-size mínimo de 16px previne zoom automático */
+        font-size: 16px !important;
+        
+        /* Garante que o zoom não aconteça mesmo com outros fatores */
+        transform-origin: left top;
+        zoom: 1;
+        
+        /* Melhora a experiência do usuário */
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        
+        /* Evita zoom ao focar */
+        -webkit-text-size-adjust: 100%;
+        -moz-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+    }
+    
+    /* Inputs específicos do sistema */
+    .form-input,
+    .input-field,
+    .search-input,
+    .filter-input {
+        font-size: 16px !important;
+    }
+    
+    /* Selects e textareas */
+    select {
+        font-size: 16px !important;
+        background-size: 16px 16px;
+    }
+    
+    textarea {
+        font-size: 16px !important;
+        line-height: 1.4;
+    }
+    
+    /* Inputs dentro de formulários */
+    form input,
+    form select,
+    form textarea {
+        font-size: 16px !important;
+    }
+    
+    /* Campos de busca e filtros */
+    input[placeholder*="Buscar"],
+    input[placeholder*="Filtrar"],
+    input[placeholder*="Pesquisar"],
+    .search-box input,
+    .filter-box input {
+        font-size: 16px !important;
+    }
+    
+    /* Botões que podem ter texto */
+    button {
+        -webkit-text-size-adjust: 100%;
+        -moz-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+    }
+}
+
+/* Para tablets em modo retrato */
+@media screen and (max-width: 1024px) and (orientation: portrait) {
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="number"],
+    input[type="tel"],
+    input[type="url"],
+    input[type="search"],
+    input[type="date"],
+    select,
+    textarea {
+        font-size: 16px !important;
+    }
+}
+
+/* Classe utilitária para forçar no-zoom */
+.no-zoom {
+    font-size: 16px !important;
+    -webkit-text-size-adjust: 100% !important;
+    -moz-text-size-adjust: 100% !important;
+    text-size-adjust: 100% !important;
+    zoom: 1 !important;
+    transform: scale(1) !important;
+}
+
+/* Previne zoom em toda a página se necessário */
+.no-page-zoom {
+    -webkit-text-size-adjust: 100% !important;
+    -moz-text-size-adjust: 100% !important;
+    text-size-adjust: 100% !important;
+    zoom: 1 !important;
+    transform: scale(1) !important;
+}
+
+/* Classe para inputs que devem manter aparência visual menor */
+.visual-small {
+    font-size: 16px !important;
+    transform: scale(0.875);
+    transform-origin: left center;
+    width: 114.28%; /* Compensa o scale */
+}
+
+/* Media query específica para iOS Safari */
+@supports (-webkit-touch-callout: none) {
+    @media screen and (max-width: 768px) {
+        input, select, textarea {
+            font-size: 16px !important;
+        }
+    }
+}
