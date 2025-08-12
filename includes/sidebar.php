@@ -569,38 +569,24 @@
     });
 </script>
 
-<!-- Script para correção automática dos paths do logotipo -->
+<!-- Correção inline de logotipo e prevenção de zoom -->
 <script>
-// Detecta automaticamente o path correto para os scripts
-(function() {
+document.addEventListener('DOMContentLoaded', function() {
+    // CORREÇÃO DE LOGOTIPO INLINE
     const currentPath = window.location.pathname;
-    let scriptBasePath = '';
+    let basePath = '';
     
-    console.log('🔍 Debug - currentPath:', currentPath);
-    
-    // Simplifica: detecta apenas se está em subpasta
+    // Detecta path correto baseado na URL
     if (currentPath.includes('/polis/')) {
-        // Remove tudo antes de /polis/ para análise
         const afterPolis = currentPath.split('/polis/')[1] || '';
         const subPaths = afterPolis.split('/').filter(segment => segment.length > 0);
         
-        // Remove o último se for arquivo .php
         if (subPaths.length > 0 && subPaths[subPaths.length - 1].includes('.php')) {
             subPaths.pop();
         }
         
-        // Agora subPaths contém apenas as pastas depois de /polis/
-        if (subPaths.length > 0) {
-            // Está em subpasta(s)
-            scriptBasePath = '../'.repeat(subPaths.length);
-        } else {
-            // Está na raiz de /polis/
-            scriptBasePath = './';
-        }
-        
-        console.log('🔍 Debug - afterPolis:', afterPolis, 'subPaths:', subPaths, 'depth:', subPaths.length);
+        basePath = subPaths.length > 0 ? '../'.repeat(subPaths.length) : './';
     } else if (currentPath.includes('/Polis/')) {
-        // Mesmo lógica para /Polis/
         const afterPolis = currentPath.split('/Polis/')[1] || '';
         const subPaths = afterPolis.split('/').filter(segment => segment.length > 0);
         
@@ -608,34 +594,108 @@
             subPaths.pop();
         }
         
-        if (subPaths.length > 0) {
-            scriptBasePath = '../'.repeat(subPaths.length);
-        } else {
-            scriptBasePath = './';
-        }
+        basePath = subPaths.length > 0 ? '../'.repeat(subPaths.length) : './';
     } else {
-        scriptBasePath = './';
+        basePath = './';
     }
     
-    // Carrega os scripts dinamicamente
-    const scripts = [
-        'assets/js/logo-path-fix.js',
-        'assets/js/no-zoom-mobile.js'
-    ];
+    console.log('🔍 Logo Fix - currentPath:', currentPath, 'basePath:', basePath);
     
-    scripts.forEach(scriptPath => {
-        const script = document.createElement('script');
-        script.src = scriptBasePath + scriptPath;
-        script.onerror = function() {
-            console.warn('Script não carregado:', this.src);
-            // Tenta path alternativo
-            const altScript = document.createElement('script');
-            altScript.src = scriptPath; // Path direto como fallback
-            document.head.appendChild(altScript);
+    // Corrige todas as imagens de logotipo
+    const logoImages = document.querySelectorAll('.logo_polis, img[alt*="Logotipo"], img[alt*="logo"], img[src*="logo-polis"]');
+    
+    logoImages.forEach(img => {
+        const correctSrc = basePath + 'assets/images/logo-polis-branco-194w.png';
+        img.src = correctSrc;
+        
+        img.onerror = function() {
+            console.warn('Logo não encontrado em:', this.src);
+            
+            // Tenta paths alternativos
+            const alternatives = [
+                './assets/images/logo-polis-branco-194w.png',
+                '../assets/images/logo-polis-branco-194w.png',
+                '../../assets/images/logo-polis-branco-194w.png',
+                '/polis/assets/images/logo-polis-branco-194w.png',
+                'assets/images/logo-polis-branco-194w.png'
+            ];
+            
+            let tryIndex = 0;
+            const tryNext = () => {
+                if (tryIndex < alternatives.length) {
+                    this.src = alternatives[tryIndex];
+                    tryIndex++;
+                } else {
+                    // Fallback final: placeholder texto
+                    this.style.display = 'none';
+                    const placeholder = document.createElement('div');
+                    placeholder.innerHTML = 'POLIS<br>ENGENHARIA';
+                    placeholder.style.cssText = `
+                        color: white; text-align: center; font-weight: bold;
+                        font-size: 12px; line-height: 1.2; padding: 10px;
+                        background: rgba(255,255,255,0.1); border-radius: 4px;
+                        width: 170px; height: 50px; display: flex;
+                        align-items: center; justify-content: center;
+                    `;
+                    this.parentNode.appendChild(placeholder);
+                }
+            };
+            
+            this.onerror = tryNext;
+            tryNext();
         };
-        document.head.appendChild(script);
+        
+        console.log('✅ Logo path corrigido:', correctSrc);
     });
     
-    console.log('📜 Scripts carregados com base path:', scriptBasePath);
-})();
+    // PREVENÇÃO DE ZOOM MOBILE INLINE
+    function isMobileDevice() {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+               (window.innerWidth <= 768);
+    }
+    
+    if (isMobileDevice()) {
+        console.log('📱 Mobile detectado - Aplicando prevenção de zoom');
+        
+        // Atualiza viewport
+        const viewport = document.querySelector('meta[name="viewport"]') || document.createElement('meta');
+        viewport.name = 'viewport';
+        viewport.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';
+        if (!document.querySelector('meta[name="viewport"]')) {
+            document.head.appendChild(viewport);
+        }
+        
+        // Aplica font-size 16px a todos inputs
+        const inputs = document.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+            input.style.fontSize = '16px';
+            input.classList.add('no-zoom');
+        });
+        
+        // Observer para novos inputs
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                mutation.addedNodes.forEach(function(node) {
+                    if (node.nodeType === 1) {
+                        if (node.matches && node.matches('input, select, textarea')) {
+                            node.style.fontSize = '16px';
+                            node.classList.add('no-zoom');
+                        }
+                        const newInputs = node.querySelectorAll && node.querySelectorAll('input, select, textarea');
+                        if (newInputs) {
+                            newInputs.forEach(input => {
+                                input.style.fontSize = '16px';
+                                input.classList.add('no-zoom');
+                            });
+                        }
+                    }
+                });
+            });
+        });
+        
+        observer.observe(document.body, { childList: true, subtree: true });
+        
+        console.log('✅ Prevenção de zoom aplicada');
+    }
+});
 </script>

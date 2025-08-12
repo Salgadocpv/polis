@@ -213,10 +213,43 @@ if (isset($_SESSION['nivel_acesso']) && strtolower(trim($_SESSION['nivel_acesso'
             // Desabilita elementos após um pequeno atraso para pegar conteúdo dinâmico
             setTimeout(disableElements, 500); // 500ms de atraso
         });
+        
+        // CORREÇÃO DE LOGOTIPO INLINE NO HEADER
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPath = window.location.pathname;
+            let basePath = '';
+            
+            if (currentPath.includes('/polis/')) {
+                const afterPolis = currentPath.split('/polis/')[1] || '';
+                const subPaths = afterPolis.split('/').filter(segment => segment.length > 0);
+                
+                if (subPaths.length > 0 && subPaths[subPaths.length - 1].includes('.php')) {
+                    subPaths.pop();
+                }
+                
+                basePath = subPaths.length > 0 ? '../'.repeat(subPaths.length) : './';
+            } else if (currentPath.includes('/Polis/')) {
+                const afterPolis = currentPath.split('/Polis/')[1] || '';
+                const subPaths = afterPolis.split('/').filter(segment => segment.length > 0);
+                
+                if (subPaths.length > 0 && subPaths[subPaths.length - 1].includes('.php')) {
+                    subPaths.pop();
+                }
+                
+                basePath = subPaths.length > 0 ? '../'.repeat(subPaths.length) : './';
+            } else {
+                basePath = './';
+            }
+            
+            // Corrige logo no header
+            const headerLogo = document.querySelector('.header-logo .logo_polis');
+            if (headerLogo) {
+                const correctSrc = basePath + 'assets/images/logo-polis-branco-194w.png';
+                headerLogo.src = correctSrc;
+                console.log('🔧 Header logo corrigido:', correctSrc);
+            }
+        });
     </script>
-    
-    <!-- Script para correção automática dos paths do logotipo -->
-    <script src="assets/js/logo-path-fix.js"></script>
 HTML;
 }
 ?>
