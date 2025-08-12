@@ -576,24 +576,40 @@
     const currentPath = window.location.pathname;
     let scriptBasePath = '';
     
-    // Calcula a profundidade relativa
-    const pathSegments = currentPath.split('/').filter(segment => segment.length > 0);
+    console.log('🔍 Debug - currentPath:', currentPath);
     
+    // Simplifica: detecta apenas se está em subpasta
     if (currentPath.includes('/polis/')) {
-        const polisIndex = pathSegments.indexOf('polis');
-        const relativeDepth = pathSegments.length - polisIndex - 1;
+        // Remove tudo antes de /polis/ para análise
+        const afterPolis = currentPath.split('/polis/')[1] || '';
+        const subPaths = afterPolis.split('/').filter(segment => segment.length > 0);
         
-        if (relativeDepth > 0) {
-            scriptBasePath = '../'.repeat(relativeDepth);
+        // Remove o último se for arquivo .php
+        if (subPaths.length > 0 && subPaths[subPaths.length - 1].includes('.php')) {
+            subPaths.pop();
+        }
+        
+        // Agora subPaths contém apenas as pastas depois de /polis/
+        if (subPaths.length > 0) {
+            // Está em subpasta(s)
+            scriptBasePath = '../'.repeat(subPaths.length);
         } else {
+            // Está na raiz de /polis/
             scriptBasePath = './';
         }
-    } else if (currentPath.includes('/Polis/')) {
-        const polisIndex = pathSegments.indexOf('Polis');
-        const relativeDepth = pathSegments.length - polisIndex - 1;
         
-        if (relativeDepth > 0) {
-            scriptBasePath = '../'.repeat(relativeDepth);
+        console.log('🔍 Debug - afterPolis:', afterPolis, 'subPaths:', subPaths, 'depth:', subPaths.length);
+    } else if (currentPath.includes('/Polis/')) {
+        // Mesmo lógica para /Polis/
+        const afterPolis = currentPath.split('/Polis/')[1] || '';
+        const subPaths = afterPolis.split('/').filter(segment => segment.length > 0);
+        
+        if (subPaths.length > 0 && subPaths[subPaths.length - 1].includes('.php')) {
+            subPaths.pop();
+        }
+        
+        if (subPaths.length > 0) {
+            scriptBasePath = '../'.repeat(subPaths.length);
         } else {
             scriptBasePath = './';
         }

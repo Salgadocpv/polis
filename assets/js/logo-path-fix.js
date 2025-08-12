@@ -13,43 +13,49 @@ document.addEventListener('DOMContentLoaded', function() {
     // Determina o prefixo correto baseado no ambiente e localização
     let basePath = '';
     
-    // Detecta a profundidade da pasta atual
-    const pathSegments = currentPath.split('/').filter(segment => segment.length > 0);
-    const depth = pathSegments.length - 1; // -1 porque o último pode ser arquivo
+    console.log('🔍 Logo Debug - currentPath:', currentPath);
     
     if (isLocal) {
-        // Ambiente local - detecta automaticamente baseado na URL
+        // Ambiente local
         if (currentPath.includes('/Polis/')) {
-            // Calcula ../s necessários baseado na profundidade
-            const upLevels = '../'.repeat(Math.max(0, depth - 1));
-            basePath = upLevels;
+            const afterPolis = currentPath.split('/Polis/')[1] || '';
+            const subPaths = afterPolis.split('/').filter(segment => segment.length > 0);
+            
+            if (subPaths.length > 0 && subPaths[subPaths.length - 1].includes('.php')) {
+                subPaths.pop();
+            }
+            
+            basePath = subPaths.length > 0 ? '../'.repeat(subPaths.length) : './';
         } else if (currentPath.includes('/polis/')) {
-            const upLevels = '../'.repeat(Math.max(0, depth - 1));
-            basePath = upLevels;
+            const afterPolis = currentPath.split('/polis/')[1] || '';
+            const subPaths = afterPolis.split('/').filter(segment => segment.length > 0);
+            
+            if (subPaths.length > 0 && subPaths[subPaths.length - 1].includes('.php')) {
+                subPaths.pop();
+            }
+            
+            basePath = subPaths.length > 0 ? '../'.repeat(subPaths.length) : './';
         } else {
-            // Se não detectar, assume que está na raiz do projeto
             basePath = './';
         }
     } else {
         // Ambiente de produção
         if (currentPath.includes('/polis/')) {
-            // Calcula a profundidade relativa a /polis/
-            const polisIndex = pathSegments.indexOf('polis');
-            const relativeDepth = pathSegments.length - polisIndex - 1;
+            const afterPolis = currentPath.split('/polis/')[1] || '';
+            const subPaths = afterPolis.split('/').filter(segment => segment.length > 0);
             
-            if (relativeDepth > 0) {
-                // Está em subpasta, usa paths relativos
-                basePath = '../'.repeat(relativeDepth);
-            } else {
-                // Está na raiz do polis
-                basePath = './';
+            if (subPaths.length > 0 && subPaths[subPaths.length - 1].includes('.php')) {
+                subPaths.pop();
             }
+            
+            basePath = subPaths.length > 0 ? '../'.repeat(subPaths.length) : './';
+            console.log('🔍 Logo Debug - afterPolis:', afterPolis, 'subPaths:', subPaths, 'depth:', subPaths.length);
         } else {
             basePath = '/polis/';
         }
     }
     
-    console.log(`📁 Detectado - Path: ${currentPath}, Depth: ${depth}, BasePath: ${basePath}`);
+    console.log(`📁 Logo Detectado - Path: ${currentPath}, BasePath: ${basePath}`);
     
     // Seleciona todas as imagens de logotipo
     const logoImages = document.querySelectorAll('.logo_polis, img[alt*="Logotipo"], img[alt*="logo"], img[src*="logo-polis"]');
