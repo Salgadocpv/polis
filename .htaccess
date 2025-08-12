@@ -1,0 +1,84 @@
+# Polis Engenharia - Configurações Apache
+# Sistema rodando na pasta /polis
+
+# Configurações de segurança
+Options -Indexes
+ServerSignature Off
+
+# Proteção de arquivos sensíveis
+<Files "*.sql">
+    Require all denied
+</Files>
+
+<Files ".env*">
+    Require all denied
+</Files>
+
+<Files "*.log">
+    Require all denied
+</Files>
+
+<Files "CLAUDE.md">
+    Require all denied
+</Files>
+
+<Files "DEPLOY.md">
+    Require all denied
+</Files>
+
+# Headers de segurança
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options nosniff
+    Header always set X-Frame-Options DENY
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# Compressão GZIP
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/plain
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/xml
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE application/xml
+    AddOutputFilterByType DEFLATE application/xhtml+xml
+    AddOutputFilterByType DEFLATE application/rss+xml
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE application/x-javascript
+</IfModule>
+
+# Cache de arquivos estáticos
+<IfModule mod_expires.c>
+    ExpiresActive on
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/jpg "access plus 1 month"
+    ExpiresByType image/jpeg "access plus 1 month"
+    ExpiresByType image/gif "access plus 1 month"
+    ExpiresByType image/svg+xml "access plus 1 month"
+</IfModule>
+
+# Reescrita de URLs para SPA-like behavior (se necessário)
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Redirecionar para HTTPS (descomente se necessário)
+    # RewriteCond %{HTTPS} off
+    # RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+    
+    # Bloquear acesso a arquivos de sistema
+    RewriteRule ^\.htaccess$ - [F,L]
+    RewriteRule ^\.gitignore$ - [F,L]
+    RewriteRule ^\.git/ - [F,L]
+</IfModule>
+
+# Configurações PHP específicas
+<IfModule mod_php.c>
+    php_value upload_max_filesize 10M
+    php_value post_max_size 10M
+    php_value max_execution_time 300
+    php_value memory_limit 256M
+    php_flag display_errors off
+    php_flag log_errors on
+</IfModule>

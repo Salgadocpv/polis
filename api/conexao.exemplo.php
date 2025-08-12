@@ -2,9 +2,12 @@
 /**
  * ARQUIVO DE EXEMPLO - CONFIGURAÇÃO DE CONEXÃO PARA PRODUÇÃO
  * 
- * 1. Copie este arquivo para api/conexao.php no servidor de produção
+ * DEPLOY NA PASTA /polis
+ * 
+ * 1. Copie este arquivo para /public_html/polis/api/conexao.php
  * 2. Atualize as credenciais do banco de dados da Hostinger
  * 3. Este arquivo não deve ser commitado por segurança
+ * 4. URL de acesso: https://seu-dominio.com/polis
  */
 
 // ===== CONFIGURAÇÕES DO BANCO DE DADOS =====
