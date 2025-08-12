@@ -11,6 +11,17 @@ logs/
 config/database.php
 config/config.php
 
+# Hostinger specific
+api/conexao.local.php
+api/conexao.prod.php
+
+# Images uploaded by users
+img/colaboradores/*.jpg
+img/colaboradores/*.jpeg
+img/colaboradores/*.png
+img/colaboradores/*.gif
+!img/colaboradores/.gitkeep
+
 # IDE files
 .vscode/
 .idea/

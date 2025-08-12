@@ -51,15 +51,35 @@ switch ($method) {
  */
 function parse_put_body() {
     $raw_data = file_get_contents('php://input');
-    $content_type = getallheaders()['Content-Type'] ?? '';
+    
+    // ===== OBTER CONTENT-TYPE DE FORMA SEGURA =====
+    // Usar $_SERVER em vez de getallheaders() para melhor compatibilidade
+    $content_type = $_SERVER['CONTENT_TYPE'] ?? '';
+    
+    // Fallback para getallheaders() se disponível
+    if (empty($content_type) && function_exists('getallheaders')) {
+        $headers = getallheaders();
+        $content_type = $headers['Content-Type'] ?? $headers['content-type'] ?? '';
+    }
 
+    // ===== LOG DE DEBUG =====
+    error_log("parse_put_body: Content-Type = " . $content_type);
+    error_log("parse_put_body: Raw data length = " . strlen($raw_data));
+    
     // Verifica se é uma requisição multipart/form-data
     if (strpos($content_type, 'multipart/form-data') !== false) {
         $data = [];
         $files = [];
         // Encontra o boundary
         preg_match('/boundary=(.*)$/', $content_type, $matches);
+        
+        if (!isset($matches[1])) {
+            error_log("parse_put_body: Boundary não encontrado no Content-Type");
+            throw new Exception("Boundary não encontrado no Content-Type");
+        }
+        
         $boundary = $matches[1];
+        error_log("parse_put_body: Boundary encontrado = " . $boundary);
 
         // Divide o corpo da requisição pelo boundary
         $parts = array_slice(explode("--$boundary", $raw_data), 1, -1);
@@ -106,11 +126,21 @@ function parse_put_body() {
                 $data[$name] = $content;
             }
         }
+        
+        error_log("parse_put_body: Processamento concluído - " . count($data) . " campos, " . count($files) . " arquivos");
         return ['data' => $data, 'files' => $files];
     } else {
         // Se não for multipart, tenta decodificar como JSON (caso o front mude)
+        error_log("parse_put_body: Não é multipart, tentando JSON");
         $data = json_decode($raw_data, true);
-        return ['data' => $data, 'files' => []];
+        
+        if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
+            error_log("parse_put_body: Erro ao decodificar JSON - " . json_last_error_msg());
+            // Se não conseguir decodificar como JSON, retorna dados vazios
+            return ['data' => [], 'files' => []];
+        }
+        
+        return ['data' => $data ?? [], 'files' => []];
     }
 }
 
@@ -161,7 +191,13 @@ function handleGet($conn) {
     $id = $_GET['id'] ?? null;
 
     if ($id) {
-        $stmt = $conn->prepare("SELECT * FROM colaboradores WHERE id = ?");
+        // ===== BUSCAR COLABORADOR ESPECÍFICO COM DADOS DO USUÁRIO =====
+        $stmt = $conn->prepare("
+            SELECT c.*, u.username as usuario_sistema, u.primeira_senha, u.ultimo_login
+            FROM colaboradores c
+            LEFT JOIN usuarios u ON c.id = u.colaborador_id
+            WHERE c.id = ?
+        ");
         $stmt->bind_param("i", $id);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -171,6 +207,15 @@ function handleGet($conn) {
             if (isset($colaborador['foto_url'])) {
                 $colaborador['foto_url'] = str_replace('\\', '/', $colaborador['foto_url']);
             }
+            
+            // Se não tem campo usuario na tabela colaboradores, usar usuario_sistema
+            if (empty($colaborador['usuario']) && !empty($colaborador['usuario_sistema'])) {
+                $colaborador['usuario'] = $colaborador['usuario_sistema'];
+            }
+            
+            // Remover campos internos se existirem
+            unset($colaborador['usuario_sistema']);
+            
             echo json_encode($colaborador);
         } else {
             http_response_code(404);
@@ -178,13 +223,28 @@ function handleGet($conn) {
         }
         $stmt->close();
     } else {
-        $result = $conn->query("SELECT * FROM colaboradores");
+        // ===== LISTAR TODOS COLABORADORES =====
+        $result = $conn->query("
+            SELECT c.*, u.username as usuario_sistema, u.primeira_senha, u.ultimo_login
+            FROM colaboradores c
+            LEFT JOIN usuarios u ON c.id = u.colaborador_id
+            ORDER BY c.data_cadastro DESC
+        ");
         $colaboradores = [];
         while ($row = $result->fetch_assoc()) {
             // Garante que a foto_url use barras normais para URLs para todos os colaboradores
             if (isset($row['foto_url'])) {
                 $row['foto_url'] = str_replace('\\', '/', $row['foto_url']);
             }
+            
+            // Se não tem campo usuario na tabela colaboradores, usar usuario_sistema
+            if (empty($row['usuario']) && !empty($row['usuario_sistema'])) {
+                $row['usuario'] = $row['usuario_sistema'];
+            }
+            
+            // Remover campos internos
+            unset($row['usuario_sistema']);
+            
             $colaboradores[] = $row;
         }
         echo json_encode($colaboradores);
@@ -203,6 +263,7 @@ function handlePost($conn) {
     $cargo = $_POST['cargo'] ?? null;
     $departamento = $_POST['departamento'] ?? null;
     $email = $_POST['email'] ?? null;
+    $usuario = $_POST['usuario'] ?? null;
     $telefone = $_POST['telefone'] ?? null;
     $data_contratacao = $_POST['data_contratacao'] ?? null;
     
@@ -221,18 +282,42 @@ function handlePost($conn) {
         }
     }
 
-    if (!$nome || !$cpf || !$email) {
+    if (!$nome || !$cpf || !$email || !$usuario) {
         http_response_code(400);
-        echo json_encode(['message' => 'Nome, CPF e Email são obrigatórios']);
+        echo json_encode(['message' => 'Nome, CPF, Email e Usuário são obrigatórios']);
         return;
     }
 
-    $stmt = $conn->prepare("INSERT INTO colaboradores (nome, cpf, cargo, departamento, email, telefone, data_contratacao, nivel_acesso, foto_url, observacoes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("ssssssssss", $nome, $cpf, $cargo, $departamento, $email, $telefone, $data_contratacao, $nivel_acesso, $foto_url, $observacoes);
+    $stmt = $conn->prepare("INSERT INTO colaboradores (nome, cpf, cargo, departamento, email, usuario, telefone, data_contratacao, nivel_acesso, foto_url, observacoes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("sssssssssss", $nome, $cpf, $cargo, $departamento, $email, $usuario, $telefone, $data_contratacao, $nivel_acesso, $foto_url, $observacoes);
 
     if ($stmt->execute()) {
-        http_response_code(201);
-        echo json_encode(['success' => true, 'message' => 'Colaborador criado com sucesso', 'id' => $stmt->insert_id, 'foto_url' => $foto_url]);
+        $colaborador_id = $stmt->insert_id;
+        
+        // ===== CRIAR USUÁRIO AUTOMATICAMENTE =====
+        // Após criar colaborador, criar usuário para login usando CPF como senha inicial
+        $created_user = createUserForCollaborator($conn, $colaborador_id, $usuario, $email, $cpf, $nivel_acesso);
+        
+        if ($created_user['success']) {
+            http_response_code(201);
+            echo json_encode([
+                'success' => true, 
+                'message' => 'Colaborador e usuário criados com sucesso', 
+                'id' => $colaborador_id, 
+                'user_id' => $created_user['user_id'],
+                'foto_url' => $foto_url
+            ]);
+        } else {
+            // Se falhou ao criar usuário, ainda retorna sucesso do colaborador mas com aviso
+            http_response_code(201);
+            echo json_encode([
+                'success' => true, 
+                'message' => 'Colaborador criado com sucesso, mas houve erro ao criar usuário: ' . $created_user['message'], 
+                'id' => $colaborador_id,
+                'foto_url' => $foto_url,
+                'user_creation_error' => true
+            ]);
+        }
     } else {
         if ($stmt->errno === 1062) { // Código de erro do MySQL para entrada duplicada
             $errorMessage = $stmt->error;
@@ -258,18 +343,33 @@ function handlePost($conn) {
  * @param mysqli $conn A conexão com o banco de dados.
  */
 function handlePut($conn) {
+    // ===== LOG DE DEBUG =====
+    error_log("PUT request iniciada para colaboradores");
+    
     $id = $_GET['id'] ?? null;
     if (!$id) {
+        error_log("PUT: ID do colaborador não fornecido");
         http_response_code(400);
         echo json_encode(['message' => 'ID do colaborador é obrigatório']);
         return;
     }
+    
+    error_log("PUT: Processando colaborador ID: " . $id);
 
-    // A requisição PUT com multipart/form-data não preenche $_POST e $_FILES.
-    // Usamos a função auxiliar para analisar o corpo da requisição.
-    $parsed_body = parse_put_body();
-    $data = $parsed_body['data'];
-    $files = $parsed_body['files'];
+    try {
+        // A requisição PUT com multipart/form-data não preenche $_POST e $_FILES.
+        // Usamos a função auxiliar para analisar o corpo da requisição.
+        $parsed_body = parse_put_body();
+        $data = $parsed_body['data'];
+        $files = $parsed_body['files'];
+        
+        error_log("PUT: Dados parseados com sucesso - " . count($data) . " campos, " . count($files) . " arquivos");
+    } catch (Exception $e) {
+        error_log("PUT: Erro ao parsear dados - " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode(['message' => 'Erro ao processar dados da requisição: ' . $e->getMessage()]);
+        return;
+    }
 
     // Buscar dados existentes do colaborador para manter a foto_url se nenhuma nova for enviada
     $stmt = $conn->prepare("SELECT foto_url FROM colaboradores WHERE id = ?");
@@ -286,6 +386,7 @@ function handlePut($conn) {
     $cargo = $data['cargo'] ?? null;
     $departamento = $data['departamento'] ?? null;
     $email = $data['email'] ?? null;
+    $usuario = $data['usuario'] ?? null;
     $telefone = $data['telefone'] ?? null;
     $data_contratacao = $data['data_contratacao'] ?? null;
     
@@ -316,14 +417,14 @@ function handlePut($conn) {
         $foto_url_to_save = null;
     }
 
-    if (!$nome || !$cpf || !$email) {
+    if (!$nome || !$cpf || !$email || !$usuario) {
         http_response_code(400);
-        echo json_encode(['message' => 'Nome, CPF e Email são obrigatórios']);
+        echo json_encode(['message' => 'Nome, CPF, Email e Usuário são obrigatórios']);
         return;
     }
 
-    $stmt = $conn->prepare("UPDATE colaboradores SET nome = ?, cpf = ?, cargo = ?, departamento = ?, email = ?, telefone = ?, data_contratacao = ?, nivel_acesso = ?, foto_url = ?, observacoes = ? WHERE id = ?");
-    $stmt->bind_param("ssssssssssi", $nome, $cpf, $cargo, $departamento, $email, $telefone, $data_contratacao, $nivel_acesso, $foto_url_to_save, $observacoes, $id);
+    $stmt = $conn->prepare("UPDATE colaboradores SET nome = ?, cpf = ?, cargo = ?, departamento = ?, email = ?, usuario = ?, telefone = ?, data_contratacao = ?, nivel_acesso = ?, foto_url = ?, observacoes = ? WHERE id = ?");
+    $stmt->bind_param("sssssssssssi", $nome, $cpf, $cargo, $departamento, $email, $usuario, $telefone, $data_contratacao, $nivel_acesso, $foto_url_to_save, $observacoes, $id);
 
     if ($stmt->execute()) {
         if ($stmt->affected_rows > 0) {
@@ -395,6 +496,89 @@ function handleDelete($conn) {
         echo json_encode(['message' => 'Erro ao excluir colaborador', 'error' => $stmt->error]);
     }
     $stmt->close();
+}
+
+/**
+ * ===== FUNÇÃO PARA CRIAR USUÁRIO AUTOMATICAMENTE =====
+ * 
+ * Cria um usuário no sistema vinculado ao colaborador recém-criado
+ * A senha inicial será o CPF do colaborador (apenas números)
+ * O usuário será marcado como primeira_senha = TRUE para forçar troca no primeiro login
+ * 
+ * @param mysqli $conn Conexão com banco de dados
+ * @param int $colaborador_id ID do colaborador criado
+ * @param string $username Nome de usuário
+ * @param string $email E-mail do colaborador
+ * @param string $cpf CPF do colaborador (será usado como senha inicial)
+ * @param string $nivel_acesso Nível de acesso do colaborador
+ * @return array Array com success (bool) e message/user_id
+ */
+function createUserForCollaborator($conn, $colaborador_id, $username, $email, $cpf, $nivel_acesso) {
+    try {
+        error_log("Criando usuário para colaborador ID: $colaborador_id");
+        
+        // ===== LIMPAR CPF PARA USAR COMO SENHA =====
+        // Remove pontos, hífens e espaços do CPF para usar como senha
+        $senha_inicial = preg_replace('/[^0-9]/', '', $cpf);
+        
+        if (empty($senha_inicial) || strlen($senha_inicial) != 11) {
+            return [
+                'success' => false,
+                'message' => 'CPF inválido para gerar senha inicial'
+            ];
+        }
+        
+        // ===== VERIFICAR SE USUÁRIO JÁ EXISTE =====
+        $stmt = $conn->prepare("SELECT id FROM usuarios WHERE username = ? OR email = ?");
+        $stmt->bind_param("ss", $username, $email);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        if ($result->num_rows > 0) {
+            $stmt->close();
+            return [
+                'success' => false,
+                'message' => 'Nome de usuário ou e-mail já existe no sistema'
+            ];
+        }
+        $stmt->close();
+        
+        // ===== CRIAR HASH DA SENHA =====
+        $password_hash = password_hash($senha_inicial, PASSWORD_DEFAULT);
+        
+        // ===== INSERIR USUÁRIO =====
+        $stmt = $conn->prepare("
+            INSERT INTO usuarios (colaborador_id, username, email, password_hash, nivel_acesso, primeira_senha) 
+            VALUES (?, ?, ?, ?, ?, TRUE)
+        ");
+        $stmt->bind_param("issss", $colaborador_id, $username, $email, $password_hash, $nivel_acesso);
+        
+        if ($stmt->execute()) {
+            $user_id = $stmt->insert_id;
+            error_log("Usuário criado com sucesso: ID $user_id para colaborador $colaborador_id");
+            $stmt->close();
+            
+            return [
+                'success' => true,
+                'user_id' => $user_id,
+                'message' => 'Usuário criado com sucesso'
+            ];
+        } else {
+            error_log("Erro ao inserir usuário: " . $stmt->error);
+            $stmt->close();
+            return [
+                'success' => false,
+                'message' => 'Erro ao inserir usuário no banco de dados'
+            ];
+        }
+        
+    } catch (Exception $e) {
+        error_log("Exceção ao criar usuário: " . $e->getMessage());
+        return [
+            'success' => false,
+            'message' => 'Erro interno: ' . $e->getMessage()
+        ];
+    }
 }
 
 $conn->close();

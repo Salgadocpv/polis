@@ -121,14 +121,25 @@ if (!isset($_SESSION['user_id']) || strtolower(trim($_SESSION['nivel_acesso'])) 
         }
         @media (max-width: 768px) {
             .setup-container {
-                padding: 1.5rem;
-                margin: 1rem auto;
+                padding: 1.5rem 1rem; /* Reduz o padding lateral */
+                margin: 1rem 0; /* Remove margem lateral */
+                width: 100%;
+                box-sizing: border-box;
             }
             .setup-container h2 {
                 font-size: 1.5rem;
             }
             .setup-grid {
                 grid-template-columns: 1fr;
+            }
+            .setup-card {
+                padding: 1rem;
+                width: 100%;
+                max-width: 100%;
+                box-sizing: border-box;
+            }
+            .setup-card .add-form {
+                flex-direction: column;
             }
         }
     </style>

@@ -58,6 +58,12 @@ if (!isset($_SESSION['user_id'])) {
             justify-content: center;
             text-align: center;
             min-height: 150px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--sombra-media);
         }
 
         .metric-card .icon {
@@ -76,6 +82,34 @@ if (!isset($_SESSION['user_id'])) {
             font-size: 1rem;
             color: var(--cor-secundaria);
             margin-top: 0.5rem;
+        }
+
+        /* Responsividade para metric cards em mobile */
+        @media (max-width: 768px) {
+            .metric-card {
+                min-height: 120px;
+                padding: 1rem;
+                margin-bottom: 1rem;
+                width: 100%;
+                max-width: 100%;
+                box-sizing: border-box;
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+            }
+            
+            .metric-card .icon {
+                font-size: 2rem;
+                margin-bottom: 0.3rem;
+            }
+            
+            .metric-card .value {
+                font-size: 2rem;
+            }
+            
+            .metric-card .label {
+                font-size: 0.9rem;
+                margin-top: 0.3rem;
+            }
         }
 
         /* Estilo para listas dentro de cards */
@@ -134,6 +168,30 @@ if (!isset($_SESSION['user_id'])) {
         @media (max-width: 768px) {
             .container.dashboard-grid {
                 grid-template-columns: 1fr; /* Uma única coluna em telas pequenas */
+                gap: 1rem; /* Espaçamento menor entre cards */
+                margin: 0; /* Remove margem extra */
+                padding: 0; /* Remove padding que pode causar overflow */
+                width: 100%; /* Garante que não ultrapasse a tela */
+                box-sizing: border-box; /* Inclui padding no cálculo da largura */
+            }
+            
+            /* Todos os cards ocupam largura total em mobile */
+            .container.dashboard-grid .card {
+                width: 100%;
+                max-width: 100%; /* Impede que ultrapasse o container */
+                margin: 0;
+                padding: 1rem; /* Padding menor em mobile */
+                box-sizing: border-box; /* Inclui padding no cálculo da largura */
+                overflow-x: hidden; /* Impede o estouro horizontal */
+                word-wrap: break-word; /* Quebra palavras longas para evitar estouro */
+                overflow-wrap: break-word; /* Padrão mais recente para quebra de palavras */
+            }
+            
+            .container.dashboard-grid .card.full-width,
+            .container.dashboard-grid .card.two-thirds {
+                grid-column: 1; /* Reset da largura especial */
+                width: 100%;
+                max-width: 100%;
             }
         }
 
@@ -170,6 +228,55 @@ if (!isset($_SESSION['user_id'])) {
         .task-list-item.completed .task-text {
             text-decoration: line-through;
             color: #888;
+        }
+
+        /* Responsividade para task lists e botões */
+        @media (max-width: 768px) {
+            .task-list-item {
+                padding: 0.75rem 0;
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+            
+            .task-list-item .task-text {
+                font-size: 0.9rem;
+                line-height: 1.4;
+                min-width: 0; /* Permite quebra de linha */
+                flex: 1 1 100%; /* Ocupa linha inteira se necessário */
+            }
+            
+            .task-list-item .task-status {
+                font-size: 0.75rem;
+                padding: 0.3rem 0.6rem;
+                border-radius: 4px;
+                align-self: flex-start;
+            }
+            
+            /* Botões menores em mobile */
+            .btn {
+                padding: 0.6rem 1rem;
+                font-size: 0.85rem;
+                border-radius: 8px;
+            }
+            
+            .btn.btn-primary,
+            .btn.btn-secondary {
+                width: 100%; /* Botões ocupam largura total em mobile */
+                margin-top: 0.5rem;
+                text-align: center;
+            }
+            
+            /* Listas dentro dos cards */
+            .card ul li {
+                font-size: 0.85rem;
+                padding: 0.5rem 0;
+                line-height: 1.4;
+            }
+            
+            .card ul li i {
+                margin-right: 0.5rem;
+                font-size: 0.8rem;
+            }
         }
 
         /* Botão de controle da sanfona */
@@ -235,16 +342,33 @@ if (!isset($_SESSION['user_id'])) {
         }
 
         @media (max-width: 768px) {
+            .main-content {
+                padding: 0 0.5rem 2rem 0.5rem; /* Padding lateral menor em mobile */
+                font-size: 1.2rem; /* Fonte menor em mobile */
+            }
+            
             .accordion-controls {
-                right: 10px;
-                top: 85px; /* Ajustado para manter proporção */
-                padding: 4px;
+                right: 0.5rem;
+                top: 75px; /* Ajustado para manter proporção */
+                padding: 0.25rem;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             }
             
             .accordion-control-btn {
-                padding: 3px 6px;
-                font-size: 0.6rem;
-                min-width: 60px;
+                padding: 0.4rem 0.8rem;
+                font-size: 0.7rem;
+                min-width: 70px;
+                gap: 0.3rem;
+            }
+            
+            /* Melhorar espaçamento dos acordeões */
+            .accordion {
+                margin: 1rem 0.5rem;
+                max-width: none; /* Remove max-width em mobile */
+            }
+            
+            .accordion-item {
+                margin-bottom: 0.75rem; /* Espaçamento menor entre itens */
             }
         }
 
@@ -314,6 +438,67 @@ if (!isset($_SESSION['user_id'])) {
             padding-right: 1rem; /* Espaço para o botão */
         }
 
+        /* Responsividade para headers e conteúdo dos acordeões */
+        @media (max-width: 768px) {
+            .accordion-header {
+                padding: 0.6rem 0.8rem;
+                border-radius: 10px;
+            }
+            
+            .accordion-header h2 {
+                font-size: 0.9rem;
+                padding-right: 0.5rem;
+            }
+            
+            .accordion-header h2 i {
+                margin-right: 0.5rem;
+                font-size: 0.85rem;
+            }
+            
+            .accordion-toggle-btn {
+                padding: 0.4rem 0.6rem;
+                border-radius: 6px;
+            }
+            
+            .accordion-toggle-btn .icon {
+                font-size: 0.85rem;
+            }
+            
+            .accordion-content {
+                border-radius: 0 0 10px 10px;
+                margin-top: 0.3rem;
+            }
+            
+            .accordion-body {
+                padding: 1rem 0.8rem;
+                width: 100%;
+                max-width: 100%;
+                box-sizing: border-box;
+                overflow-x: hidden; /* Previne overflow horizontal */
+            }
+            
+            .accordion-body h2 {
+                font-size: 1.1rem;
+                margin-bottom: 1rem;
+                word-wrap: break-word; /* Quebra palavras longas */
+            }
+            
+            .accordion-body h3 {
+                font-size: 1rem;
+                margin-bottom: 0.8rem;
+                word-wrap: break-word;
+            }
+            
+            /* Garantir que o container dentro do accordion-body não ultrapasse */
+            .accordion-body .container.dashboard-grid {
+                width: 100%;
+                max-width: 100%;
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+        }
+
 
         .accordion-content {
             max-height: 0;
@@ -342,6 +527,79 @@ if (!isset($_SESSION['user_id'])) {
         .accordion-body h2 {
             color: var(--cor-principal);
             margin: 0 0 1.5rem 0;
+        }
+
+        /* Media query para telas muito pequenas (smartphones pequenos) */
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 0 0.3rem 1.5rem 0.3rem;
+                font-size: 1.1rem;
+            }
+            
+            .accordion {
+                margin: 0.8rem 0.3rem;
+            }
+            
+            .accordion-controls {
+                right: 0.3rem;
+                top: 70px;
+                padding: 0.2rem;
+            }
+            
+            .accordion-control-btn {
+                padding: 0.3rem 0.6rem;
+                font-size: 0.65rem;
+                min-width: 60px;
+            }
+            
+            .metric-card {
+                min-height: 100px;
+                padding: 0.8rem;
+                width: 100%;
+                max-width: 100%;
+                box-sizing: border-box;
+            }
+            
+            .metric-card .icon {
+                font-size: 1.8rem;
+            }
+            
+            .metric-card .value {
+                font-size: 1.8rem;
+            }
+            
+            .metric-card .label {
+                font-size: 0.8rem;
+            }
+            
+            .accordion-header {
+                padding: 0.5rem 0.6rem;
+            }
+            
+            .accordion-header h2 {
+                font-size: 0.85rem;
+            }
+            
+            .accordion-body {
+                padding: 0.8rem;
+            }
+            
+            .container.dashboard-grid {
+                padding: 0;
+            }
+            
+            .card {
+                padding: 0.8rem !important;
+            }
+            
+            .task-list-item .task-text {
+                font-size: 0.85rem;
+            }
+            
+            .btn {
+                padding: 0.5rem 0.8rem;
+                font-size: 0.8rem;
+            }
         }
     </style>
 </head>

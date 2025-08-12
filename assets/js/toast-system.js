@@ -1,29 +1,83 @@
 /**
- * Sistema de Toast Notifications para Polis Engenharia
+ * SISTEMA DE NOTIFICAÇÕES TOAST - POLIS ENGENHARIA
+ * 
+ * Sistema completo de notificações não-invasivas com animações suaves,
+ * múltiplos tipos, ações personalizáveis e design responsivo moderno.
+ * 
+ * Recursos principais:
+ * - 4 tipos de toast: success, error, warning, info
+ * - Toasts persistentes ou com auto-remoção
+ * - Sistema de progresso visual
+ * - Ações personalizáveis (botões)
+ * - Confirmações com callbacks
+ * - Loading states
+ * - Animações CSS3 suaves
+ * - Design responsivo
+ * - Atualização dinâmica de toasts
+ * 
+ * Uso básico:
+ * toastSystem.success('Título', 'Mensagem');
+ * toastSystem.error('Erro', 'Algo deu errado');
+ * toastSystem.confirm('Confirmar?', 'Tem certeza?', onYes, onNo);
+ * 
+ * Integração com CSS Custom Properties do Polis para temas consistentes.
  */
 
 class ToastSystem {
     constructor() {
-        this.container = null;
-        this.toasts = new Map();
-        this.init();
+        // ===== PROPRIEDADES DA INSTÂNCIA =====
+        this.container = null;           // Container DOM principal para todos os toasts
+        this.toasts = new Map();        // Map para rastrear todos os toasts ativos [id -> {element, data}]
+        this.init();                    // Inicialização automática
     }
 
+    /**
+     * INICIALIZAÇÃO DO SISTEMA
+     * 
+     * Configura o container DOM e injeta os estilos CSS necessários
+     * Executado automaticamente no constructor
+     */
     init() {
-        this.createContainer();
-        this.addStyles();
+        this.createContainer();  // Cria elemento container no DOM
+        this.addStyles();       // Injeta CSS na página
     }
 
+    /**
+     * CRIAÇÃO DO CONTAINER PRINCIPAL
+     * 
+     * Cria o elemento DOM que conterá todos os toasts da aplicação
+     * Posicionado fixed no canto superior direito da tela
+     * 
+     * Implementa padrão singleton - só cria se não existir
+     */
     createContainer() {
+        // Verifica se container já existe (previne duplicação)
         if (document.getElementById('toast-container')) return;
 
+        // ===== CRIAÇÃO DO CONTAINER =====
         this.container = document.createElement('div');
-        this.container.id = 'toast-container';
-        this.container.className = 'toast-container';
+        this.container.id = 'toast-container';      // ID único para referência
+        this.container.className = 'toast-container'; // Classe CSS para estilização
+        
+        // Adiciona container ao body da página
         document.body.appendChild(this.container);
     }
 
+    /**
+     * INJEÇÃO DE ESTILOS CSS
+     * 
+     * Injeta dinamicamente todos os estilos CSS necessários para o sistema
+     * Usa CSS-in-JS para manter tudo em um arquivo e evitar dependências externas
+     * 
+     * Recursos incluídos:
+     * - Animações suaves (cubic-bezier)
+     * - Design responsivo (breakpoints mobile)
+     * - Cores temáticas usando CSS Custom Properties
+     * - Estados hover/focus para acessibilidade
+     * - Backdrop-filter para efeito glassmorphism
+     */
     addStyles() {
+        // Verifica se estilos já foram injetados (previne duplicação)
         if (document.getElementById('toast-styles')) return;
 
         const styles = `
@@ -204,18 +258,41 @@ class ToastSystem {
         document.head.insertAdjacentHTML('beforeend', styles);
     }
 
+    /**
+     * FUNÇÃO PRINCIPAL - EXIBIR TOAST
+     * 
+     * Função central que gerencia a criação, exibição e comportamento de todos os toasts
+     * Aceita objeto de configuração com todas as opções disponíveis
+     * 
+     * @param {Object} options - Configurações do toast
+     * @param {string} options.type - Tipo: 'success', 'error', 'warning', 'info'
+     * @param {string} options.title - Título principal (opcional)
+     * @param {string} options.message - Mensagem do toast
+     * @param {number} options.duration - Duração em ms (0 = permanente)
+     * @param {boolean} options.closable - Permite fechar manualmente
+     * @param {boolean} options.persistent - Não remove automaticamente
+     * @param {Array} options.actions - Array de ações/botões personalizados
+     * 
+     * @returns {string} - ID único do toast criado (para referência posterior)
+     */
     show(options) {
+        // ===== EXTRAÇÃO E DEFAULTS DOS PARÂMETROS =====
         const {
-            type = 'info',
-            title = '',
-            message = '',
-            duration = 5000,
-            closable = true,
-            persistent = false,
-            actions = []
+            type = 'info',          // Tipo padrão: informativo
+            title = '',             // Título opcional
+            message = '',           // Mensagem principal
+            duration = 5000,        // 5 segundos por padrão
+            closable = true,        // Permite fechar por padrão
+            persistent = false,     // Não é persistente por padrão
+            actions = []            // Sem ações por padrão
         } = options;
 
+        // ===== GERAÇÃO DE ID ÚNICO =====
+        // Cada toast precisa de ID único para rastreamento e controle
         const toastId = this.generateId();
+        
+        // ===== CRIAÇÃO DO ELEMENTO DOM =====
+        // Constrói o elemento HTML do toast com todas as configurações
         const toast = this.createToast({
             id: toastId,
             type,
@@ -225,30 +302,44 @@ class ToastSystem {
             actions
         });
 
+        // ===== INSERÇÃO NO DOM =====
+        // Adiciona toast ao container (inicialmente invisível)
         this.container.appendChild(toast);
         
-        // Animar entrada
+        // ===== ANIMAÇÃO DE ENTRADA =====
+        // setTimeout garante que o DOM foi atualizado antes da animação
+        // Adiciona classe 'show' que ativa transição CSS (translateX + opacity)
         setTimeout(() => {
             toast.classList.add('show');
         }, 50);
 
-        // Auto-remover (se não for persistente)
+        // ===== CONTROLE DE DURAÇÃO E AUTO-REMOÇÃO =====
         if (!persistent && duration > 0) {
+            // ===== BARRA DE PROGRESSO =====
+            // Inicia animação da barra de progresso visual
             this.startProgress(toast, duration);
+            
+            // ===== AGENDAMENTO DE REMOÇÃO =====
+            // Remove automaticamente após duração especificada
             setTimeout(() => {
                 this.remove(toastId);
             }, duration);
         }
 
-        // Armazenar referência
+        // ===== ARMAZENAMENTO EM MEMÓRIA =====
+        // Guarda referência do toast para controle posterior
+        // Map permite lookup O(1) por ID
         this.toasts.set(toastId, {
-            element: toast,
-            type,
-            title,
-            message,
-            timestamp: Date.now()
+            element: toast,         // Referência DOM
+            type,                  // Tipo para referência
+            title,                 // Título para referência  
+            message,               // Mensagem para referência
+            timestamp: Date.now()  // Timestamp de criação
         });
 
+        // ===== RETORNO DO ID =====
+        // Permite que chamador mantenha referência para controle posterior
+        // Útil para: toastSystem.remove(id), toastSystem.update(id, newOptions)
         return toastId;
     }
 
@@ -347,36 +438,59 @@ class ToastSystem {
         return 'toast_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
     }
 
-    // Métodos de conveniência
+    // ===== MÉTODOS DE CONVENIÊNCIA =====
+    // Funções simplificadas para uso rápido dos tipos mais comuns de toast
+    // Cada método tem durações otimizadas para o tipo de mensagem
+    
+    /**
+     * TOAST DE SUCESSO
+     * Usado para confirmar ações bem-sucedidas (salvar, criar, atualizar)
+     * Duração padrão: 5 segundos (adequada para confirmações positivas)
+     */
     success(title, message, options = {}) {
         return this.show({
             type: 'success',
             title,
             message,
-            ...options
+            ...options  // Permite sobrescrever configurações padrão
         });
     }
 
+    /**
+     * TOAST DE ERRO
+     * Usado para reportar erros, falhas de validação ou problemas críticos
+     * Duração padrão: 8 segundos (mais tempo para ler mensagens de erro)
+     */
     error(title, message, options = {}) {
         return this.show({
             type: 'error',
             title,
             message,
-            duration: 8000, // Erros ficam mais tempo
+            duration: 8000, // Erros ficam mais tempo visíveis
             ...options
         });
     }
 
+    /**
+     * TOAST DE AVISO
+     * Usado para alertas, validações não-críticas ou informações importantes
+     * Duração padrão: 6 segundos (tempo intermediário para processamento)
+     */
     warning(title, message, options = {}) {
         return this.show({
             type: 'warning',
             title,
             message,
-            duration: 6000,
+            duration: 6000, // Tempo intermediário para avisos
             ...options
         });
     }
 
+    /**
+     * TOAST INFORMATIVO
+     * Usado para informações gerais, dicas ou status updates
+     * Duração padrão: 5 segundos (padrão do sistema)
+     */
     info(title, message, options = {}) {
         return this.show({
             type: 'info',
@@ -470,17 +584,31 @@ class ToastSystem {
     }
 }
 
-// Inicialização global
+// ===== INICIALIZAÇÃO GLOBAL DO SISTEMA =====
+/**
+ * Auto-inicialização do sistema quando DOM estiver pronto
+ * 
+ * Cria instância global única do ToastSystem e funções de conveniência
+ * para uso em toda a aplicação Polis Engenharia
+ */
 document.addEventListener('DOMContentLoaded', () => {
+    // ===== INSTÂNCIA GLOBAL =====
+    // Cria instância única acessível globalmente
+    // Uso: window.toastSystem.success('Título', 'Mensagem')
     window.toastSystem = new ToastSystem();
     
-    // Função de conveniência global
+    // ===== FUNÇÃO DE CONVENIÊNCIA GLOBAL =====
+    // Atalho para uso rápido: showToast('success', 'Título', 'Mensagem')
+    // Mapeado para os métodos de conveniência da instância
     window.showToast = (type, title, message, options) => {
         return window.toastSystem[type](title, message, options);
     };
 
-    console.log('Toast System initialized');
+    // Log de inicialização para debug
+    console.log('🍞 Toast System initialized and ready');
 });
 
-// Disponibilizar classe globalmente
+// ===== DISPONIBILIZAÇÃO DA CLASSE =====
+// Permite criar instâncias adicionais se necessário
+// Uso: const myToasts = new ToastSystem();
 window.ToastSystem = ToastSystem;

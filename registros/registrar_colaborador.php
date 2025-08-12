@@ -22,6 +22,7 @@ $is_viewer = (isset($_SESSION['nivel_acesso']) && strtolower(trim($_SESSION['niv
     
     <!-- Scripts do sistema -->
     <script src="../assets/js/toast-system.js"></script>
+    <script src="../assets/js/modal-system.js"></script>
     <script src="../assets/js/breadcrumb-system.js"></script>
     <script src="../assets/js/lazy-loading.js"></script>
     <script src="../assets/js/global-search.js"></script>
@@ -361,6 +362,19 @@ $is_viewer = (isset($_SESSION['nivel_acesso']) && strtolower(trim($_SESSION['niv
                     </div>
 
                     <div class="form-group">
+                        <label for="usuario">Usuário para Login</label>
+                        <input type="text" id="usuario" name="usuario" placeholder="nome.sobrenome" required 
+                               title="Nome de usuário para acesso ao sistema" 
+                               pattern="^[a-zA-Z0-9._-]+$"
+                               minlength="3">
+                        <small style="color: var(--cor-secundaria); font-size: 0.85rem; margin-top: 0.25rem; display: block;">
+                            <i class="fas fa-info-circle"></i> 
+                            Este será o nome de usuário para acesso ao sistema. A senha inicial será o CPF informado.
+                        </small>
+                        <span id="usuario-error" class="error-message"></span>
+                    </div>
+
+                    <div class="form-group">
                         <label for="telefone">Telefone</label>
                         <input type="tel" id="telefone" name="telefone" placeholder="(XX) XXXXX-XXXX">
                     </div>
@@ -376,9 +390,9 @@ $is_viewer = (isset($_SESSION['nivel_acesso']) && strtolower(trim($_SESSION['niv
                         <label for="nivel_acesso">Nível de Acesso</label>
                         <select id="nivel_acesso" name="nivel_acesso" required>
                             <option value="">Selecione o Nível</option>
-                            <option value="Administrador">Administrador</option>
-                            <option value="Usuário">Usuário</option>
-                            <option value="Visualizador">Visualizador</option>
+                            <option value="administrador">Administrador</option>
+                            <option value="usuario">Usuário</option>
+                            <option value="visualizador">Visualizador</option>
                         </select>
                     </div>
                 </div>
@@ -408,6 +422,8 @@ $is_viewer = (isset($_SESSION['nivel_acesso']) && strtolower(trim($_SESSION['niv
             const cpfInput = document.getElementById('cpf');
             const cpfError = document.getElementById('cpf-error');
             const emailInput = document.getElementById('email');
+            const usuarioInput = document.getElementById('usuario');
+            const usuarioError = document.getElementById('usuario-error');
             const departamentoSelect = document.getElementById('departamento');
             
             const dataContratacaoInput = document.getElementById('data_contratacao');
@@ -468,6 +484,60 @@ $is_viewer = (isset($_SESSION['nivel_acesso']) && strtolower(trim($_SESSION['niv
                 } else {
                     this.classList.remove('error');
                 }
+            });
+
+            // ===== VALIDAÇÃO DO CAMPO USUÁRIO =====
+            // Validação de nome de usuário único e formato
+            usuarioInput.addEventListener('blur', async function() {
+                const usuario = this.value.trim();
+                
+                if (!usuario) {
+                    return; // Campo vazio será tratado na validação geral
+                }
+                
+                // Validar formato
+                const usuarioRegex = /^[a-zA-Z0-9._-]+$/;
+                if (!usuarioRegex.test(usuario)) {
+                    this.classList.add('error');
+                    usuarioError.textContent = 'Usuário pode conter apenas letras, números, pontos, hífens e underscores.';
+                    usuarioError.style.display = 'block';
+                    Modal.error('Usuário Inválido', 'O nome de usuário pode conter apenas letras, números, pontos, hífens e underscores.');
+                    return;
+                }
+                
+                // Validar tamanho mínimo
+                if (usuario.length < 3) {
+                    this.classList.add('error');
+                    usuarioError.textContent = 'Nome de usuário deve ter pelo menos 3 caracteres.';
+                    usuarioError.style.display = 'block';
+                    Modal.error('Usuário Inválido', 'Nome de usuário deve ter pelo menos 3 caracteres.');
+                    return;
+                }
+                
+                // Verificar se usuário já existe (apenas se não estamos editando o mesmo colaborador)
+                try {
+                    const response = await fetch(`../api/usuarios.php?check_username=${encodeURIComponent(usuario)}`);
+                    if (response.ok) {
+                        const result = await response.json();
+                        if (result.exists) {
+                            // Se estamos editando, verificar se é o mesmo usuário
+                            const editingId = collaboratorIdInput.value;
+                            if (!editingId || result.colaborador_id != editingId) {
+                                this.classList.add('error');
+                                usuarioError.textContent = 'Este nome de usuário já está em uso.';
+                                usuarioError.style.display = 'block';
+                                Modal.error('Usuário Inválido', 'Este nome de usuário já está em uso. Escolha outro.');
+                                return;
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.log('Erro ao verificar usuário (não crítico):', error);
+                }
+                
+                // Se chegou até aqui, usuário é válido
+                this.classList.remove('error');
+                usuarioError.style.display = 'none';
             });
 
             dataContratacaoInput.addEventListener('blur', function() {
@@ -575,7 +645,16 @@ $is_viewer = (isset($_SESSION['nivel_acesso']) && strtolower(trim($_SESSION['niv
                 }
                 submitButton.textContent = 'Atualizar Colaborador';
                 collaboratorIdInput.value = collaboratorId;
-                fetchCollaboratorData(collaboratorId);
+                
+                // ===== CARREGAR DADOS DO COLABORADOR =====
+                // Aguardar carregamento de forma assíncrona
+                (async () => {
+                    try {
+                        await fetchCollaboratorData(collaboratorId);
+                    } catch (error) {
+                        console.error('Erro ao carregar dados do colaborador:', error);
+                    }
+                })();
             } else {
                 // Verificar se visualizador está tentando cadastrar novo colaborador
                 if (isViewer) {
@@ -605,17 +684,63 @@ $is_viewer = (isset($_SESSION['nivel_acesso']) && strtolower(trim($_SESSION['niv
                     
                     if (collaborator && collaborator.id) {
                         console.log('Preenchendo campos do formulário...');
-                        // Preencher campos
+                        
+                        // ===== AGUARDAR CARREGAMENTO DOS SELECTS =====
+                        // Garantir que departamentos e cargos estejam carregados antes de popular
+                        await Promise.all([
+                            ensureDepartamentosLoaded(),
+                            ensureCargosLoaded()
+                        ]);
+                        
+                        // Preencher campos básicos
                         document.getElementById('nome_completo').value = collaborator.nome || '';
                         document.getElementById('cpf').value = collaborator.cpf || '';
                         document.getElementById('cargo').value = collaborator.cargo || '';
-                        document.getElementById('departamento').value = collaborator.departamento || '';
                         document.getElementById('email').value = collaborator.email || '';
+                        document.getElementById('usuario').value = collaborator.usuario || '';
                         document.getElementById('telefone').value = collaborator.telefone || '';
                         document.getElementById('data_contratacao').value = collaborator.data_contratacao || '';
-                        
                         document.getElementById('nivel_acesso').value = collaborator.nivel_acesso || '';
                         document.getElementById('observacoes').value = collaborator.observacoes || '';
+                        
+                        // ===== POPULAR CAMPO CARGO =====
+                        // Popular cargo após garantir que as opções estão carregadas
+                        if (collaborator.cargo) {
+                            const cargoSelect = document.getElementById('cargo');
+                            cargoSelect.value = collaborator.cargo;
+                            
+                            // Verificar se a opção existe, senão criar uma temporária
+                            if (cargoSelect.value !== collaborator.cargo) {
+                                console.log('Cargo não encontrado nas opções, criando opção temporária');
+                                const tempOption = document.createElement('option');
+                                tempOption.value = collaborator.cargo;
+                                tempOption.textContent = collaborator.cargo;
+                                cargoSelect.appendChild(tempOption);
+                                cargoSelect.value = collaborator.cargo;
+                            }
+                            
+                            console.log('Cargo populado:', collaborator.cargo);
+                        }
+                        
+                        // ===== POPULAR CAMPO DEPARTAMENTO =====
+                        // Popular departamento após garantir que as opções estão carregadas
+                        if (collaborator.departamento) {
+                            const departamentoSelect = document.getElementById('departamento');
+                            departamentoSelect.value = collaborator.departamento;
+                            
+                            // Verificar se a opção existe, senão criar uma temporária
+                            if (departamentoSelect.value !== collaborator.departamento) {
+                                console.log('Departamento não encontrado nas opções, criando opção temporária');
+                                const tempOption = document.createElement('option');
+                                tempOption.value = collaborator.departamento;
+                                tempOption.textContent = collaborator.departamento;
+                                departamentoSelect.appendChild(tempOption);
+                                departamentoSelect.value = collaborator.departamento;
+                            }
+                            
+                            console.log('Departamento populado:', collaborator.departamento);
+                        }
+                        
                         console.log('Campos preenchidos com sucesso!');
                         showMessage('Dados carregados com sucesso!', false);
 
@@ -637,26 +762,86 @@ $is_viewer = (isset($_SESSION['nivel_acesso']) && strtolower(trim($_SESSION['niv
                 }
             }
 
+            // ===== CONTROLE DE CARREGAMENTO DOS DEPARTAMENTOS =====
+            let departamentosLoaded = false;
+            let departamentosPromise = null;
+
             // Função para carregar departamentos do backend
             async function loadDepartamentos() {
-                try {
-                    const response = await fetch('../api/valores_fixos.php?tipo=departamento');
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    const departamentos = await response.json();
-                    departamentoSelect.innerHTML = '<option value="">Selecione um Departamento</option>';
-                    departamentos.forEach(dep => {
-                        const option = document.createElement('option');
-                        option.value = dep.valor;
-                        option.textContent = dep.valor;
-                        departamentoSelect.appendChild(option);
-                    });
-                } catch (error) {
-                    console.error('Erro ao carregar departamentos:', error);
-                    Modal.error('Erro', 'Não foi possível carregar os departamentos.');
-                    departamentoSelect.innerHTML = '<option value="">Erro ao carregar</option>';
+                if (departamentosLoaded) {
+                    return; // Já carregados
                 }
+
+                if (departamentosPromise) {
+                    return departamentosPromise; // Já está carregando
+                }
+
+                departamentosPromise = (async () => {
+                    try {
+                        console.log('Carregando departamentos...');
+                        const response = await fetch('../api/valores_fixos.php?tipo=departamento');
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        const departamentos = await response.json();
+                        departamentoSelect.innerHTML = '<option value="">Selecione um Departamento</option>';
+                        departamentos.forEach(dep => {
+                            const option = document.createElement('option');
+                            option.value = dep.valor;
+                            option.textContent = dep.valor;
+                            departamentoSelect.appendChild(option);
+                        });
+                        departamentosLoaded = true;
+                        console.log('Departamentos carregados com sucesso:', departamentos.length);
+                    } catch (error) {
+                        console.error('Erro ao carregar departamentos:', error);
+                        Modal.error('Erro', 'Não foi possível carregar os departamentos.');
+                        departamentoSelect.innerHTML = '<option value="">Erro ao carregar</option>';
+                        throw error;
+                    }
+                })();
+
+                return departamentosPromise;
+            }
+
+            // Função para garantir que departamentos estejam carregados
+            async function ensureDepartamentosLoaded() {
+                if (!departamentosLoaded) {
+                    await loadDepartamentos();
+                }
+            }
+
+            // ===== INTEGRAÇÃO COM SISTEMA DE CARGOS =====
+            // Função para garantir que cargos estejam carregados
+            async function ensureCargosLoaded() {
+                // Aguardar que o sistema de cargos esteja disponível
+                return new Promise((resolve) => {
+                    // Se o sistema de cargos já existe, usar ele
+                    if (window.DynamicCargoSystem) {
+                        console.log('Sistema de cargos já disponível, recarregando...');
+                        window.DynamicCargoSystem.loadCargos().then(() => {
+                            resolve();
+                        }).catch(() => {
+                            resolve(); // Resolve mesmo com erro para não travar
+                        });
+                    } else {
+                        // Aguardar o sistema de cargos ficar disponível
+                        const checkCargos = () => {
+                            if (window.DynamicCargoSystem) {
+                                console.log('Sistema de cargos detectado, carregando...');
+                                window.DynamicCargoSystem.loadCargos().then(() => {
+                                    resolve();
+                                }).catch(() => {
+                                    resolve();
+                                });
+                            } else {
+                                // Tentar novamente em 100ms
+                                setTimeout(checkCargos, 100);
+                            }
+                        };
+                        checkCargos();
+                    }
+                });
             }
 
             // Carregar departamentos ao iniciar a página
@@ -689,6 +874,19 @@ $is_viewer = (isset($_SESSION['nivel_acesso']) && strtolower(trim($_SESSION['niv
                     errors.push({ field: 'email', message: 'E-mail é obrigatório.' });
                 } else if (!ValidationUtils.validateEmail(document.getElementById('email').value)) {
                     errors.push({ field: 'email', message: 'E-mail inválido.' });
+                }
+
+                // ===== VALIDAÇÃO DO USUÁRIO =====
+                if (!ValidationUtils.validateRequired(document.getElementById('usuario').value)) {
+                    errors.push({ field: 'usuario', message: 'Nome de usuário é obrigatório.' });
+                } else {
+                    const usuario = document.getElementById('usuario').value;
+                    const usuarioRegex = /^[a-zA-Z0-9._-]+$/;
+                    if (!usuarioRegex.test(usuario)) {
+                        errors.push({ field: 'usuario', message: 'Usuário pode conter apenas letras, números, pontos, hífens e underscores.' });
+                    } else if (usuario.length < 3) {
+                        errors.push({ field: 'usuario', message: 'Nome de usuário deve ter pelo menos 3 caracteres.' });
+                    }
                 }
 
                 if (!ValidationUtils.validateRequired(document.getElementById('data_contratacao').value)) {
