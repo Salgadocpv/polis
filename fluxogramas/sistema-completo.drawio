@@ -1,0 +1,344 @@
+<mxfile host="app.diagrams.net" agent="Claude Code" version="28.1.0">
+  <diagram name="Sistema Polis - Fluxo Completo" id="sistema-polis-completo">
+    <mxGraphModel dx="2400" dy="1600" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- Início do Sistema -->
+        <mxCell id="inicio" value="Sistema Polis Engenharia&#xa;(index.html)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#4CAF50;strokeColor=#2E7D32;fontColor=white;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="500" y="50" width="160" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Fluxo de Login -->
+        <mxCell id="login-page" value="Tela de Login" style="whiteSpace=wrap;html=1;fillColor=#2196F3;strokeColor=#1976D2;fontColor=white;" vertex="1" parent="1">
+          <mxGeometry x="520" y="150" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="auth-decision" value="Autenticação&#xa;válida?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FF9800;strokeColor=#F57C00;fontColor=white;" vertex="1" parent="1">
+          <mxGeometry x="530" y="250" width="100" height="80" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="first-password" value="Primeira senha?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#9C27B0;strokeColor=#7B1FA2;fontColor=white;" vertex="1" parent="1">
+          <mxGeometry x="530" y="370" width="100" height="80" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="change-password" value="Alterar Primeira&#xa;Senha" style="whiteSpace=wrap;html=1;fillColor=#E91E63;strokeColor=#C2185B;fontColor=white;" vertex="1" parent="1">
+          <mxGeometry x="720" y="390" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Decisão de Tipo de Usuário -->
+        <mxCell id="user-type" value="Tipo de&#xa;Usuário?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#607D8B;strokeColor=#455A64;fontColor=white;" vertex="1" parent="1">
+          <mxGeometry x="530" y="490" width="100" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- Dashboard Administrador -->
+        <mxCell id="admin-dashboard" value="Dashboard&#xa;Administrador" style="whiteSpace=wrap;html=1;fillColor=#FF5722;strokeColor=#D84315;fontColor=white;" vertex="1" parent="1">
+          <mxGeometry x="750" y="520" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Dashboard Usuário -->
+        <mxCell id="user-dashboard" value="Dashboard&#xa;Usuário" style="whiteSpace=wrap;html=1;fillColor=#3F51B5;strokeColor=#303F9F;fontColor=white;" vertex="1" parent="1">
+          <mxGeometry x="300" y="520" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Funcionalidades do Admin -->
+        <mxCell id="admin-clients" value="Gestão de&#xa;Clientes" style="whiteSpace=wrap;html=1;fillColor=#8BC34A;strokeColor=#689F38;fontColor=white;" vertex="1" parent="1">
+          <mxGeometry x="650" y="650" width="100" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="admin-employees" value="Gestão de&#xa;Colaboradores" style="whiteSpace=wrap;html=1;fillColor=#8BC34A;strokeColor=#689F38;fontColor=white;" vertex="1" parent="1">
+          <mxGeometry x="770" y="650" width="100" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="admin-projects" value="Gestão de&#xa;Projetos" style="whiteSpace=wrap;html=1;fillColor=#8BC34A;strokeColor=#689F38;fontColor=white;" vertex="1" parent="1">
+          <mxGeometry x="890" y="650" width="100" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="calendar" value="Calendário" style="whiteSpace=wrap;html=1;fillColor=#8BC34A;strokeColor=#689F38;fontColor=white;" vertex="1" parent="1">
+          <mxGeometry x="650" y="730" width="100" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="settings" value="Configurações&#xa;do Sistema" style="whiteSpace=wrap;html=1;fillColor=#8BC34A;strokeColor=#689F38;fontColor=white;" vertex="1" parent="1">
+          <mxGeometry x="770" y="730" width="100" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="reports" value="Relatórios" style="whiteSpace=wrap;html=1;fillColor=#8BC34A;strokeColor=#689F38;fontColor=white;" vertex="1" parent="1">
+          <mxGeometry x="890" y="730" width="100" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Sub-funcionalidades Clientes -->
+        <mxCell id="register-client" value="Registrar&#xa;Cliente" style="ellipse;whiteSpace=wrap;html=1;fillColor=#CDDC39;strokeColor=#9E9D24;fontColor=black;" vertex="1" parent="1">
+          <mxGeometry x="530" y="850" width="80" height="50" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="list-clients" value="Listar&#xa;Clientes" style="ellipse;whiteSpace=wrap;html=1;fillColor=#CDDC39;strokeColor=#9E9D24;fontColor=black;" vertex="1" parent="1">
+          <mxGeometry x="630" y="850" width="80" height="50" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="edit-client" value="Editar&#xa;Cliente" style="ellipse;whiteSpace=wrap;html=1;fillColor=#CDDC39;strokeColor=#9E9D24;fontColor=black;" vertex="1" parent="1">
+          <mxGeometry x="730" y="850" width="80" height="50" as="geometry" />
+        </mxCell>
+        
+        <!-- Sub-funcionalidades Colaboradores -->
+        <mxCell id="register-employee" value="Registrar&#xa;Colaborador" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFEB3B;strokeColor=#F57F17;fontColor=black;" vertex="1" parent="1">
+          <mxGeometry x="650" y="950" width="80" height="50" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="list-employees" value="Listar&#xa;Colaboradores" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFEB3B;strokeColor=#F57F17;fontColor=black;" vertex="1" parent="1">
+          <mxGeometry x="750" y="950" width="80" height="50" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="manage-users" value="Gerenciar&#xa;Usuários" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFEB3B;strokeColor=#F57F17;fontColor=black;" vertex="1" parent="1">
+          <mxGeometry x="850" y="950" width="80" height="50" as="geometry" />
+        </mxCell>
+        
+        <!-- Sub-funcionalidades Projetos -->
+        <mxCell id="register-project" value="Registrar&#xa;Projeto" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFC107;strokeColor=#FF8F00;fontColor=black;" vertex="1" parent="1">
+          <mxGeometry x="770" y="1050" width="80" height="50" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="list-projects" value="Listar&#xa;Projetos" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFC107;strokeColor=#FF8F00;fontColor=black;" vertex="1" parent="1">
+          <mxGeometry x="870" y="1050" width="80" height="50" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="project-status" value="Status&#xa;Projetos" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFC107;strokeColor=#FF8F00;fontColor=black;" vertex="1" parent="1">
+          <mxGeometry x="970" y="1050" width="80" height="50" as="geometry" />
+        </mxCell>
+        
+        <!-- Funcionalidades do Usuário -->
+        <mxCell id="user-tasks" value="Minhas&#xa;Tarefas" style="ellipse;whiteSpace=wrap;html=1;fillColor=#03A9F4;strokeColor=#0277BD;fontColor=white;" vertex="1" parent="1">
+          <mxGeometry x="180" y="650" width="80" height="50" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="user-account" value="Minha&#xa;Conta" style="ellipse;whiteSpace=wrap;html=1;fillColor=#03A9F4;strokeColor=#0277BD;fontColor=white;" vertex="1" parent="1">
+          <mxGeometry x="280" y="650" width="80" height="50" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="user-calendar" value="Calendário" style="ellipse;whiteSpace=wrap;html=1;fillColor=#03A9F4;strokeColor=#0277BD;fontColor=white;" vertex="1" parent="1">
+          <mxGeometry x="380" y="650" width="80" height="50" as="geometry" />
+        </mxCell>
+        
+        <!-- APIs e Endpoints -->
+        <mxCell id="api-layer" value="Camada de APIs" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#795548;strokeColor=#5D4037;fontColor=white;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="1200" width="1050" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="api-login" value="login.php" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#9E9E9E;strokeColor=#616161;fontColor=white;" vertex="1" parent="1">
+          <mxGeometry x="80" y="1270" width="80" height="30" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="api-clients" value="clientes.php" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#9E9E9E;strokeColor=#616161;fontColor=white;" vertex="1" parent="1">
+          <mxGeometry x="180" y="1270" width="80" height="30" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="api-employees" value="colaboradores.php" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#9E9E9E;strokeColor=#616161;fontColor=white;" vertex="1" parent="1">
+          <mxGeometry x="280" y="1270" width="100" height="30" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="api-projects" value="projetos.php" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#9E9E9E;strokeColor=#616161;fontColor=white;" vertex="1" parent="1">
+          <mxGeometry x="400" y="1270" width="80" height="30" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="api-events" value="eventos.php" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#9E9E9E;strokeColor=#616161;fontColor=white;" vertex="1" parent="1">
+          <mxGeometry x="500" y="1270" width="80" height="30" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="api-users" value="usuarios.php" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#9E9E9E;strokeColor=#616161;fontColor=white;" vertex="1" parent="1">
+          <mxGeometry x="600" y="1270" width="80" height="30" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="api-search" value="search.php" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#9E9E9E;strokeColor=#616161;fontColor=white;" vertex="1" parent="1">
+          <mxGeometry x="700" y="1270" width="80" height="30" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="api-analytics" value="analytics.php" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#9E9E9E;strokeColor=#616161;fontColor=white;" vertex="1" parent="1">
+          <mxGeometry x="800" y="1270" width="80" height="30" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="api-logout" value="logout.php" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#9E9E9E;strokeColor=#616161;fontColor=white;" vertex="1" parent="1">
+          <mxGeometry x="900" y="1270" width="80" height="30" as="geometry" />
+        </mxCell>
+        
+        <!-- Banco de Dados -->
+        <mxCell id="database" value="MySQL Database&#xa;(polis_db)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#607D8B;strokeColor=#455A64;fontColor=white;" vertex="1" parent="1">
+          <mxGeometry x="500" y="1350" width="100" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- Tabelas do Banco -->
+        <mxCell id="table-users" value="usuarios" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#B0BEC5;strokeColor=#78909C;fontColor=black;" vertex="1" parent="1">
+          <mxGeometry x="300" y="1460" width="60" height="30" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="table-clients" value="clientes" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#B0BEC5;strokeColor=#78909C;fontColor=black;" vertex="1" parent="1">
+          <mxGeometry x="380" y="1460" width="60" height="30" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="table-employees" value="colaboradores" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#B0BEC5;strokeColor=#78909C;fontColor=black;" vertex="1" parent="1">
+          <mxGeometry x="460" y="1460" width="80" height="30" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="table-projects" value="projetos" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#B0BEC5;strokeColor=#78909C;fontColor=black;" vertex="1" parent="1">
+          <mxGeometry x="560" y="1460" width="60" height="30" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="table-events" value="eventos" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#B0BEC5;strokeColor=#78909C;fontColor=black;" vertex="1" parent="1">
+          <mxGeometry x="640" y="1460" width="60" height="30" as="geometry" />
+        </mxCell>
+        
+        <!-- Conexões principais -->
+        <mxCell id="edge1" edge="1" parent="1" source="inicio" target="login-page">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="edge2" edge="1" parent="1" source="login-page" target="auth-decision">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="edge3" edge="1" parent="1" source="auth-decision" target="first-password">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="edge4" edge="1" parent="1" source="auth-decision" target="login-page">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="450" y="290" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="450" y="290" />
+              <mxPoint x="450" y="180" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="edge5" edge="1" parent="1" source="first-password" target="change-password">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="edge6" edge="1" parent="1" source="first-password" target="user-type">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="edge7" edge="1" parent="1" source="change-password" target="user-type">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="780" y="530" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="edge8" edge="1" parent="1" source="user-type" target="admin-dashboard">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="edge9" edge="1" parent="1" source="user-type" target="user-dashboard">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Conexões Admin -->
+        <mxCell id="edge10" edge="1" parent="1" source="admin-dashboard" target="admin-clients">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="edge11" edge="1" parent="1" source="admin-dashboard" target="admin-employees">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="edge12" edge="1" parent="1" source="admin-dashboard" target="admin-projects">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="edge13" edge="1" parent="1" source="admin-dashboard" target="calendar">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="edge14" edge="1" parent="1" source="admin-dashboard" target="settings">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="edge15" edge="1" parent="1" source="admin-dashboard" target="reports">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Conexões User -->
+        <mxCell id="edge16" edge="1" parent="1" source="user-dashboard" target="user-tasks">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="edge17" edge="1" parent="1" source="user-dashboard" target="user-account">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="edge18" edge="1" parent="1" source="user-dashboard" target="user-calendar">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Sub-funcionalidades -->
+        <mxCell id="edge19" edge="1" parent="1" source="admin-clients" target="register-client">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="edge20" edge="1" parent="1" source="admin-clients" target="list-clients">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="edge21" edge="1" parent="1" source="admin-clients" target="edit-client">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="edge22" edge="1" parent="1" source="admin-employees" target="register-employee">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="edge23" edge="1" parent="1" source="admin-employees" target="list-employees">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="edge24" edge="1" parent="1" source="admin-employees" target="manage-users">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="edge25" edge="1" parent="1" source="admin-projects" target="register-project">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="edge26" edge="1" parent="1" source="admin-projects" target="list-projects">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="edge27" edge="1" parent="1" source="admin-projects" target="project-status">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Conexões API -->
+        <mxCell id="edge28" edge="1" parent="1" source="api-layer" target="database" style="dashed=1;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Rótulos para decisões -->
+        <mxCell id="label1" value="Sim" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontColor=#4CAF50;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="590" y="320" width="40" height="30" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="label2" value="Não" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontColor=#F44336;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="410" y="250" width="40" height="30" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="label3" value="Sim" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontColor=#4CAF50;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="650" y="400" width="40" height="30" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="label4" value="Não" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontColor=#4CAF50;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="590" y="450" width="40" height="30" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="label5" value="Admin" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontColor=#FF5722;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="670" y="510" width="50" height="30" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="label6" value="Usuário" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontColor=#3F51B5;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="420" y="510" width="60" height="30" as="geometry" />
+        </mxCell>
+        
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
